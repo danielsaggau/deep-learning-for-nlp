@@ -9,9 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## topics 
-
-Motivation word embeddings 
+# Motivation word embeddings 
 
 Deep Learning models understand numerical representations 
 Texts are sequences of symbolic units
@@ -33,7 +31,7 @@ The embeddings of infrequent words may have low quality, unseen words have no em
 We have more unlabeled than labeled data.
 So let’s pretrain embeddings on the unlabeled data first.
 
-Word2Vec
+# Word2Vec
 
 **Mikolov et al. (2013): Efficient estimation of word representations in vector space.**
 
@@ -213,7 +211,7 @@ $h(j)=f(x(j),h(j-1); \theta)$
 
 **Vanilla RNN**
 
-# TODO
+#TODO
 
 Backpropagation through time
 RNNs are trained via “backpropagation through time”
