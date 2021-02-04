@@ -711,8 +711,11 @@ Impression of types of tasks used in NLP to test capability of models.
 GPT3 we have context and the model is asked to predict the next word (or several).
 It does not change its parameters.
 It is just doing the language change objective.
-Designed to make it hard to predict the next word.
-
+Designed to make it hard to predict the next word for language model.
+SOTA is state of the art.
+GPT3 is better than SOTA.
+Not specifically trained on this task.
+It gets better performance in the zero shot set.
 
 
 
