@@ -644,12 +644,113 @@ Even though performance looks good on standard train/dev/test splits,
 the deviation between the training set and the data actually encountered in real application can be large.
 So our benchmarks often overestimate what performance would be in reality.
 
-
 ## GPT: Intro
+
+Like BERT, GPT is a language model.
+But not MLM, but a conventional language model: it predicts the next word (or subword).
+Like BERT, GPT is trained on a huge corpus, actually an even huger corpus.
+Like BERT, GPT is a transformer architecture.
+* Difference 1: GPT is a single model that aims to solve all tasks.
+  * It can also switch back and forth between tasks and solve tasks within tasks, another human capability that is important in practice. “fluidity”
+* Difference 2: GPT leverages task descriptions. 
+* Difference 3: GPT is effective at few-shot learning.
 
 ## GPT3 results on tasks
 
+GPT: Two types of learning
+GPT: Effective in-context learning
+X-shot comparison and effect of larger corpora
+Fine-tuning (not used by GPT)
+Zero-shot (no gradient update)
+Few-shot (no gradient update)
+
+SuperGLUE
+BoolQ
+CB (true/false/neither)
+COPA
+RTE (similar to natural language inference) WiC
+WSC
+MultiRC (true/false)
+ReCoRD
+
+Context given to gpt3:
+* Three “training” articles to condition gpt3
+* Title and subtitle of a 4th article
+gpt3 then has to generated the body of the 4th article
+Evaluation: Humans are presented the human-generated original article and the gpt3-generated article and are asked to identify which is fake.
+
+### Summary
+
+The average person has difficulty distinguishing human-generated and gpt3-generated news.
+However, the non-average person probably can distinguish them quite well.
+There’s also evidence that machines are able to distinguish human-generated and gpt3-generated news.
+This has great significance for preventing abuse of AI technology.
+
 ## GPT limitations
+
+ext generation 
+
+* Repetitions
+* Lack of coherence
+* Contradictions
+
+
+Common sense physics
+E.g., “If I put cheese in the fridge, will it melt?” See below
+
+Comparison tasks
+GPT3 performs poorly when two inputs have to be compared with each other or when rereading the first input might help.
+E.g., is the meaning of a word the same in two sentences (WiC). E.g., natural language inference, e.g., ANLI
+Not a good match for left-to-right processing model.
+Possible future direction: bidirectional models
+
+Self-supervised prediction on text
+All predictions are weighted equally, but some words are more informative than others.
+Text does not capture the physical world.
+Many tasks are about satisfying a goal – prediction is not a good paradigm for that.
+
+Low sample efficiency
+Humans experience much less text than GPT3, but perform better.
+We need approaches that are as sample-efficient as humans, i.e., need much less text for same performance.
+
+Size/Interpretability/Calibration
+Difficult to use in practice due to its size. Behavior hard to interpret
+Probability badly calibrated
+
+Discussion: Does GPT3 “learn” from context?
+GPT3 learns a lot in pretraining.
+But does it really learn anything from task description and the few-shot prefix?
+Notice that no parameters are changed during fewshot “learning”, so it is not true learning.
+If you give the same task again to GPT3 an hour later, it has retained no information about the previous instance.
+How much of human learning is “de novo”, how much just uses existing scales.
+
+Three OpenAI papers
+GPT (2018): Improving language understanding by generative pre-training
+GPT2 (2019): Language Models are Unsupervised Multitask Learners GPT3 (2020): Language Models are Few-Shot Learners
+We’re not interested here in the (small) differences between these papers and will focus on GPT3, but refer to it as GPT.
+Recommendation: Read GPT3 paper
+
+**Marcus & Davis (1)**
+
+(biological reasoning)
+You poured yourself a glass of cranberry juice, but then you absentmindedly poured about a teaspoon of grape juice into it. It looks okay. You try sniffing it, but you have a bad cold, so you can’t smell anything. You are very thirsty.
+So GPT continues: you drink it. You are now dead. (physical reasoning)
+
+* You are having a small dinner party. You want to serve dinner in the living room. The dining room table is wider than the doorway, so to get it into the living room, you will have to
+* GPT continues: remove the door. You have a table saw, so you cut the door in half and remove the top half. (social reasoning)
+* You are a defense lawyer and you have to go to court today. Getting dressed in the morning, you discover that your suit pants are badly stained.
+* However, your bathing suit is clean and very stylish. In fact, it’s expensive French couture; it was a birthday present from Isabel.
+* You decide that you should wear GPT continues: the bathing suit to court. 
+* You arrive at the courthouse and are met by a bailiff who escorts you to the courtroom.(object and individual tracking)
+* Yesterday I dropped my clothes off at the dry cleaner’s and I have yet to pick them up. Where are my clothes?
+* GPT continues: I have a lot of clothes.(psychological reasoning)
+* Janet and Penny went to the store to get presents for Jack. 
+* Janet said, “I will buy Jack a top.” “Don’t get Jack a top,” says Penny. “He has a top.
+* He will GPT continues: get a top.” “I will get Jack a top,” said Janet. (non sequiturs)
+* At the party, I poured myself a glass of lemonade, but it turned out to be too sour, so I added a little sugar.
+* I didn’t see a spoon handy, so I stirred it with a cigarette.
+* But that turned out to be a bad idea because GPT continues: it kept falling on the floor.
+* That’s when he decided to start the Cremation Association of North America, which has become a major cremation provider with 145 locations.
 
 ## GPT: Discussion
 
@@ -662,6 +763,33 @@ Text contains bias, language models learn that bias and will act on it when depl
 A future much better version of GPT could make a lot of jobs redundant: journalism, marketing etc.
 One partial solution: legal requirement to disclose automatic generation (“Kennzeichungspflicht”)
 
+ GPT authors on APTs (advanced persistent threats, e.g., North Korea)
+. . . language models may not be worth investing significant resources in because there has been no convincing demonstration that current language models are significantly better than current methods for generating text, and because methods for “targeting” or “controlling” the content of language models are still at a very early stage.
+   
+
+Experiment: make GPT3 generate text in “male” and “female” contexts and find generated words more correlated with one vs the other.
+Male contexts: “He was very . . . ”, “He would be described as . . . ”
+Female contexts: “She was very . . . ”, “She would be described as
+
+Experiment (analogous to gender): make GPT3 generate text in racial contexts and find generated words more correlated with one vs the other.
+Contexts: “The RACE man was very . . . ”, “The RACE woman was very . . . ”, “People would describe the RACE person as . . . ” etc.
+
+Bias: What to do?
+Debias the biased model (huge literature on this) Control training text (very hard to do in practice)
+GPT3 authors: not really a problem NLP people can address, need interdisciplinary approach
+
+**Response to green concerns about GPT3**
+
+You only have to train the model once. If you then use it a lot, that can be efficient.
+Generating 100 pages of text with GPT3 costs a few cents in energy – perhaps ok?
+Distill the model once it is trained (e.g., Distilbert)
+
+
 
 # Multilingual models 
 
+## mBERT 
+
+## XLM-R
+
+## Investingating the mystery 
