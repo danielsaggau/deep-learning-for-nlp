@@ -617,52 +617,107 @@ Application: finetune on a particular task Great performance!
 What’s not to like?
 (In what follows I will use BERT as a representative for this class of language models and only talk about BERT – but the discussion includes RoBERTa, Albert, XLNet etc.)
 
-* You need a different model for each task.
-* (Because BERT is differently finetuned for each task.)
-* Not realistic in many real deployment scenarios, e.g., on mobile devices. 
+## Problems with BERT
+
+* You need a different model for each task. (Because BERT is differently finetuned for each task.) 
+  * Not realistic in many real deployment scenarios, e.g., on mobile devices. 
 * Human learning: we arguably have a single model that solves all tasks!
 * Question: Is there a framework that allows us to create a single model that solves all tasks?
 
 * BERT has two training modes, first (MLM) pretraining, then finetuning.
-* Finetuning is supervised learning, i.e., learning from labeled examples. Arguably, learning from labeled examples is untypical for human
-learning.
+* Finetuning is supervised learning, i.e., learning from labeled examples. 
+* Arguably, learning from labeled examples is untypical for human learning.
 * You never learn a task solely by being presented a bunch of examples, without explanation.
-* Instead, in human learning, there is almost always a task description. Example: How to boil an egg. “Place eggs in the bottom of a saucepan.
+* Instead, in human learning, there is almost always a task description. 
+* Example: How to boil an egg. “Place eggs in the bottom of a saucepan.
 * Fill the pan with cold water. Etc.” (Notice that this is not an example.)
 * Question: Is there a framework that allows us to leverage task descriptions?
 
-BERT has great performance, but it only has great performance if the training set is fairly large, generally 1000s of examples.
-This is completely different from human learning!
-We do use examples in learning, but in most cases, only a few.
-Example: Maybe the person teaching you how to boil an egg will show you how to do it one or two times.
-But probably not 10 times Definitely not a 1000 times
-More practical concern: it’s very expensive to label 1000s of examples for each task (there are many many tasks).
-Question: Is there a framework that allows us to learn from just a small number of examples?
-This is called few-shot learning.
-More subtle aspect of the same problem (i.e., large training sets): overfitting
-Even though performance looks good on standard train/dev/test splits,
-the deviation between the training set and the data actually encountered in real application can be large.
+* BERT has great performance, but it only has great performance if the training set is fairly large, generally 1000s of examples.
+* This is completely different from human learning!
+* We do use examples in learning, but in most cases, only a few.
+* Example: Maybe the person teaching you how to boil an egg will show you how to do it one or two times.
+* But probably not 10 times Definitely not a 1000 times
+* More practical concern: it’s very expensive to label 1000s of examples for each task (there are many many tasks).
+
+**Question:** 
+Is there a framework that allows us to learn from just a small number of examples?
+This is called **few-shot learning.**
+More subtle aspect of the same problem (i.e., large training sets): **overfitting**
+Even though performance looks good on standard train/dev/test splits, the deviation between the training set and the data actually encountered in real application can be large.
 So our benchmarks often overestimate what performance would be in reality.
+*There is always a shift in reality. A model trained for 2020 wont be able to adapt to changes in 2021. This is the finetuning. Great idea in priciple but not generalizable/external validity* 
 
 ## GPT: Intro
 
 Like BERT, GPT is a language model.
-But not MLM, but a conventional language model: it predicts the next word (or subword).
-Like BERT, GPT is trained on a huge corpus, actually an even huger corpus.
+But not MLM, but a conventional language model: it predicts the next word (or subword). *(this rose smells good example)*
+Like BERT, GPT is trained on a huge corpus, actually an even huger corpus. (much larger)
 Like BERT, GPT is a transformer architecture.
-* Difference 1: GPT is a single model that aims to solve all tasks.
+* Difference 1: GPT is a **single model** that aims to solve all tasks.
   * It can also switch back and forth between tasks and solve tasks within tasks, another human capability that is important in practice. “fluidity”
 * Difference 2: GPT leverages task descriptions. 
 * Difference 3: GPT is effective at few-shot learning.
 
-## GPT3 results on tasks
+In-context learning which technically is not deep learning. 
 
 GPT: Two types of learning
+
+Does in-context learning (similar problems)
+Models sees examples.
+
 GPT: Effective in-context learning
+
+zeroshot, oneshot, fewshot 
+when zeroshot, the accruacy is very low.
+It can leverage a single training example a huge amount.
+By adding more, it gets better.
+The big jump is the first.
+With enough labeled examples, you dont need a task description. 
+With one shot, there is a huge millage due to task descriptions. 
+
 X-shot comparison and effect of larger corpora
+
+few shot is performing best but only marginal difference with huge corpora.
+
 Fine-tuning (not used by GPT)
+
 Zero-shot (no gradient update)
+
+The model predicts the answer given only a natural language description of the task. 
+No gradient update.
+
+#TODO one shot:
+
 Few-shot (no gradient update)
+Gets several examples. 
+No gradient update performed.
+
+Architecture: Effect of size on model. 
+Getting better, the more parameters are given. 
+
+Compute PeaFLOP/s-days
+
+Looks linear, the more compute the use, the better your complexity.
+The larger model, even better.
+The main concern is that there is not enough text.
+
+## GPT3 results on tasks
+
+Impression of types of tasks used in NLP to test capability of models.
+
+### Lambada task 
+
+GPT3 we have context and the model is asked to predict the next word (or several).
+It does not change its parameters.
+It is just doing the language change objective.
+Designed to make it hard to predict the next word.
+
+
+
+
+
+
 
 SuperGLUE
 BoolQ
@@ -688,7 +743,7 @@ This has great significance for preventing abuse of AI technology.
 
 ## GPT limitations
 
-ext generation 
+Next generation 
 
 * Repetitions
 * Lack of coherence
