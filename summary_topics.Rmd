@@ -1,5 +1,5 @@
 ---
-title: "summary_course"
+title: "Deep Learning for NLP Summary"
 author: "Daniel Saggau"
 date: "2/4/2021"
 output: pdf_document
@@ -104,9 +104,10 @@ So what is a filter? What is a filter bank?
 
 Let’s say that we want to train a linear regression model to predict some variable of interest from each datapoint.
 Since the raw data is noisy, it makes sense to smoothe it with our rolling average filter first:
-yˆ=wh+b; h=(f∗x) jjjj
+$y =wh+b; h=(f \times x) jjjj$
 But maybe we should weight the datapoints in our 7-day window differently? Maybe we should give a higher weight to datapoints close to the current day j?
-We can manually engineer a filter that we think is better, for example: f′ = [ 1 , 1 , 1 , 1 , 1, 1, 1]T
+We can manually engineer a filter that we think is better, for example: 
+# TODO
 Alternative: Let the model choose the optimal filter parameters, based on the training data.
 How? Gradient descent!
 
@@ -114,10 +115,10 @@ How? Gradient descent!
 **Bias and nonlinearities:**
 * In a real CNN, we usually add a trainable scalar bias b, and we apply a nonlinearity g (such as the rectified linear unit):
 K
-hj =g(b+􏰂fkx(j+k−K)) k=1
+#TODO
 Edge cases:
 * Possibel strategies for when the filter overlaps with the edges (beginning/end) of x:
-* Outputs where filter overlaps with edge are undefined, i.e., h has fewer dimensions than x (K − 1 fewer, to be exact)
+* Outputs where filter overlaps with edge are undefined, i.e., h has fewer dimensions than $x(K - 1$ fewer, to be exact)
   * Pad x with zeros before applying the filter
   * Pad x with some other relevant value, such as the overall average, the
 first/last value, ...
@@ -129,16 +130,16 @@ Stride:
 **Convolution with more than one axis**
 
 Extending the convolution operation to tensors with more than one axis is straightforward.
-Let X ∈ RJ1×...×JL be a tensor that has L axes and let F ∈ RK1×...×KL be a filter.
+Let $X \in RJ1×...×JL$ be a tensor that has L axes and let $F \in RK1×...×KL$ be a filter.
 * The dimensionalities of the filter axes are called filter sizes or kernel sizes (“kernel width”, “kernel height”, etc.)
-* From now on, we assume that the filter is applied to a symmetric window around position j, not just to positions to the left of j. (The rolling average was a special scenario, because we assume that future data points xj′ with j′ > j are not available on day j.)
-Then the output H = F ∗ X is a tensor with L axes, where
+* From now on, we assume that the filter is applied to a symmetric window around position j, not just to positions to the left of j. (The rolling average was a special scenario, #TODO are not available on day j.)
+Then the output $H = F \times X$ is a tensor with L axes, where
 
 **Channels**
 
-
 So far, we have assumed that each position in the input (each day or each pixel) contains a single scalar.
-Now, we assume that our input has M features (“channels”) per position, i.e., there is an additional feature axis: X ∈ RJ1×...×JL×M Example:
+Now, we assume that our input has M features (“channels”) per position, i.e., there is an additional feature axis:$X \in RJ1×...×JL×M$
+Example:
 * M = 3 channels per pixel in an RGB (red/green/blue) image
 * In NLP: dimensionality of pretrained word embeddings
 Then our filter gets an additional feature axis, which has the same dimensionality as the feature axis of X:
@@ -155,9 +156,8 @@ A filter bank is a tensor that consists of N filters, which each have the same s
 The filters of a filter bank are applied to X independently, and their outputs are stacked (they form a new axis in the output).
 So let this be our input and filter bank:
 
-Then our output is a tensor of shape H ∈ RJ1×...×JL,N
-* (assuming that we are padding the first L axes of X to preserve their
-dimensionality in H) where:
+Then our output is a tensor of shape $H \in RJ1×...×JL,N$
+* (assuming that we are padding the first L axes of X to preserve their dimensionality in H) where:
 
 **Assumptions behind convolution**
 Translation invariance: Same object in different positions. 
@@ -187,9 +187,9 @@ Repeated pooling has the effect of reducing tensor sizes.
 Images are 2D, but text is a 1D sequence (of words, n-grams, etc).
 Words are usually represented by M-dimensional word embeddings (e.g., from Word2Vec)
 So on text, we do 1-D convolution with M input features:
-* Input matrix: X ∈ RJ×M
-* Filter bank of N filters: F ∈ RK×M×N;K < J
-* Output matrix: H ∈ RJ×N
+* Input matrix: $X in RJ×M$
+* Filter bank of $N filters: F in RK×M×N;K < J$
+* Output matrix: $H in RJ×N$
   * (assuming that we padded X with zeros along its first axis)
 Usually, CNNs in NLP are not as deep as CNNs in Computer Vision –
 often just one convolutional layer.
@@ -205,9 +205,10 @@ Assumption: Text is written sequentially, so our model should read it sequential
 “RNN”: class of Neural Network architectures that process text sequentially (left-to-right or right-to-left)
 Generally speaking:
 
-* Internal “state” h
-* RNN consumes one input x(j) per time step j
-*  Update function: h(j) = f (x(j), h(j−1); $\theta$)
+* Internal “state” $h$
+* RNN consumes one input $x(j)$ per time step $j$
+*  Update function:
+$h(j)=f(x(j),h(j-1); \theta)$
   * where parameters $\theta$ are shared across all time steps
 
 **Vanilla RNN**
@@ -219,7 +220,7 @@ RNNs are trained via “backpropagation through time”
 To understand how this works, imagine the RNN as a Feed-Forward Net (FFN), whose depth is equal to the sentence length
 For now, let’s pretend that every time step (every layer) has its own
 (j)
-dummy parameters θ , which are identical copies of theta
+dummy parameters $\theta$ , which are identical copies of theta
 
 
 LSTM 
