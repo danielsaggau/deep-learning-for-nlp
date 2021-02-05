@@ -3,7 +3,7 @@ title: "Deep Learning for NLP Summary"
 author: "Daniel Saggau"
 date: "2/4/2021"
 output: pdf_document
-fontsize: 12 pt
+fontsize: 9 pt
 ---
 
 ```{r setup, include=FALSE}
@@ -716,6 +716,23 @@ SOTA is state of the art.
 GPT3 is better than SOTA.
 Not specifically trained on this task.
 It gets better performance in the zero shot set.
+Closed book question answering QA.
+
+### Winograd task
+
+Inference based on context.
+GPT3 does well but not state of the art here. 
+Just a language model but still gets common sense well.
+
+### ARC task 
+
+Question about physics in high school.
+Context: which palms produce the most heat example.
+
+### RACE Task 
+
+Long task and pick which continuation is the correct one.
+
 
 
 
