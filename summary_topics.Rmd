@@ -3,14 +3,82 @@ title: "Deep Learning for NLP Summary"
 author: "Daniel Saggau"
 date: "2/4/2021"
 output: pdf_document
-fontsize: 9 pt
+fontsize: 12 pt
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Motivation word embeddings 
+# Lecture 4 Introduction to Machine Learning - Optimization, Deep Feed Forward Networks, Backproagation, Regularization
+
+# Optimization
+
+If #TODO is convex, it is minimized where #TODO = 0
+If #TODO is not convex, the gradient can help us to improve our objective nevertheless (and find a local optimum).
+Many optimization techniques were originally developed for convex objective functions, but are found to be working well for non-convex functions too.
+Use the fact that gradient indicates the slope of the function in the direction of steepest increase
+
+# Local Minima
+
+# Gradient Descent for Logistic Regression
+
+Gradient Descent: Summary
+Iterative method for function minimization.
+Gradient indicates rate of change in objective function, given a local change to feature weights.
+Substract the gradient:
+I decrease parameters that (locally) have positive correlation with objective
+I increase parameters that (locally) have negative correlation with objective
+Gradient updates only have the desired properties in a small region around previous parameters theta of t. 
+Control locality by the learning rate eta.
+Gradient descent is slow: For relatively small step in the right direction, all of training data has to be processed.
+This version of gradient descent is often also called batch gradient descent.
+
+
+
+#TODO 
+
+
+## Other Choices for Hidden Units
+
+A good activation function aids learning, and provides large gradients.
+Sigmoidal functions (logistic sigmoid)
+I have only a small region before they flatten out in either direction.
+I Practice shows that this seems to be ok in conjunction with Log-loss
+objective.
+I But they don’t work as well as hidden units.
+I ReLU are better alternative since gradient stays constant.
+Other hidden unit functions:
+I maxout: take maximum of several values in previous layer.
+I purely linear: can serve as low-rank approximation.
+
+# Summary
+
+Gradient descent: Minimize loss by iteratively substracting gradient from parameter vector.
+Stochastic gradient descent: Approximate gradient by considering small subsets of examples.
+Regularization: penalize large parameter values, e.g. by adding L2-norm of parameter vector.
+Feedforward networks: layers of (non-linear) function compositions.
+Output non-linearities: interpreted as probability densities (logistic sigmoid, softmax, Gaussian)
+Hidden layers: Rectified linear units (max(0; z))
+Backpropagation: Compute gradient of cost w.r.t. parameters using chain rule.
+
+# Regularization 
+
+Overfitting vs. underfitting
+Regularization: Any modification to a learning algorithm for reducing
+its generalization error but not its training error
+Solution space is still the same
+
+Prefer models with smaller feature weights.
+**Popular regularizers:**
+I Penalize large L2 norm.
+I Penalize large L1 norm (aka LASSO, induces sparsity)
+
+## L2 Regularization 
+
+The surface of the objective function is now a combination of the original cost, and the regularization penalty.
+
+# Lecture 5 Motivation word embeddings 
 
 Deep Learning models understand numerical representations 
 Texts are sequences of symbolic units
@@ -106,7 +174,7 @@ Since the raw data is noisy, it makes sense to smoothe it with our rolling avera
 $y =wh+b; h=(f \times x) jjjj$
 But maybe we should weight the datapoints in our 7-day window differently? Maybe we should give a higher weight to datapoints close to the current day j?
 We can manually engineer a filter that we think is better, for example: 
-# TODO
+#todo
 Alternative: Let the model choose the optimal filter parameters, based on the training data.
 How? Gradient descent!
 
@@ -143,11 +211,11 @@ Example:
 * In NLP: dimensionality of pretrained word embeddings
 Then our filter gets an additional feature axis, which has the same dimensionality as the feature axis of X:
 
-# TODO
+#todo
 
 During convolution, we simply sum over this new axis as well
 
-# TODO
+#todo
 
 **Filter banks**
 
@@ -285,12 +353,42 @@ Step 2: Turn e into probability distribution with the softmax function
 
 Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
 
-# TODO
+#todo
 
 
-## Transformers 
+# Lecutre 8 Self Attention and the Transformers 
+
+## Limitations of RNN's
+
+In an RNN, at a given point in time j, the information about all past is “crammed” into the state vector
+So for long sequences, the state becomes a bottleneck inputs x for an LSTM)
+Especially problematic in encoder-decoder models (e.g., for Machine Translation)
+Solution: Attention (Bahdanau et al., 2015) – an architectural modification of the RNN encoder-decoder that allows the model to “attend to” past encoder states
+
+### Attention in neural networks
+
+Contrary to our geolocation example, the q, kj and vj vectors of a neural network are produced as a function of the input and some trainable parameters
+So the model learns which keys are relevant for which queries, based on the training data and loss function
+
+No (or few) assumptions are baked into the architecture (no notion of which words are neighbors in the sentence, sequentiality, etc.)
+The lack of prior knowledge often means that the Transformer requires more training data than an RNN/CNN to achieve a certain performance
+But when presented with sufficient data, it usually outperforms them After Christmas: Transfer learning as a way to pretrain Transformers
+on lots of data
+
+The Bahdanau model is still an RNN, just with attention on top.
+Architecture that consists of attention only: Transformer (Vaswani et al. (2017), “Attention is all you need”)
 
 * Cross attention and self attention 
+
+
+We can use attention on many different “things”, including:
+
+  * The pixels of images
+  * The nodes of knowledge graphs
+  * The words of a vocabulary
+
+
+
 * Parallelized attention 
 * Multi-layer attention
 * Masked self-attention 
@@ -299,9 +397,13 @@ Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
 * Position encodings
 
 
+
+
+
+
 ## Hyperparameter Optimization 
 
-# Transfer Learning 
+# Lecture 9 Transfer Learning 
 
 What is Transfer Learning?
 
@@ -400,19 +502,247 @@ Two possible stopping criteria:
 Vocabulary size or incremental increase of the likelihood
 
 
-# BERT 
+# Lecture 10 BERT 
 
-# Alternatives to BERT
+## Bidirectional Encoder Representations from Transformers:
+
+* Bidirectionally contextual model
+* Introduces new self-supervised objective(s)
+* Completely replaces recurrent architectures by Self-Attention + simultaneously able to include bidirectionality
+
+### Predecessors of BERT
+
+#### word2vec
+
+Tomas Mikolov et al. publish four papers on vector representations of words constituting the word2vec framework
+This received very much attention as it revolutionized the way words were encoded for deep learning models in the field of NLP.
+
+#### ULMFiT
+
+The first transfer learning architecture (Universal Language Model Fine-Tuning) was proposed by Howard and Ruder (2018).
+An embedding layer at the bottom of the network was complemented by three AWD-LSTM layers (Merity et al., 2017) and a softmax layer for pre-training.
+A Unidirectional contextual model since no biLSTMs are used.
+
+#### ELMo
+
+Guys from AllenNLP developed a bidirectionally contextual framework by proposing ELMo (Embeddings from Language Models; Peters et al., 2018).
+Embeddings from this architecture are the (weighted) combination of the intermediate-layer representations produced by the biLSTM layers.
+
+#### OpenAI GPT 
+
+Radford et al., 2018 abandon the use of LSTMs. The combine multiple Transformer decoder block with a standard language modelling objective for pre-training.
+Compared to ELMo it is just unidirectionally contextual, since it uses only the decoder side of the Transformer. On the other hand it is end-to-end trainable (cf. ULMFiT) and embeddings do not have to be extracted like in the case of ELMo.
+
+#### BERT
+
+BERT (Devlin et al., 2018) is a bidirectional contextual embedding model purely relying on Self-Attention by using multiple Transformer encoder blocks.
+BERT (and its successors) rely on the Masked Language Modelling objective during pre-training on huge unlabelled corpora of text.
+
+### Core of Bert 
+
+### A remark on Self-Supervision
+
+**Causality is an issue!**
+
+Remember: Input and target sequences are the same → We modify the input to create a meaningful task
+A sequence is used to predict itself again
+Bidirectionality at a lower layer would allow a word to see itself at later hidden layers
+
+* The model would be allowed to cheat!
+* This would not lead to meaningful internal representations
+
+### Major architectural differences:
+
+Devlin et al. (2018)
+ELMo uses to separate unidirectional models to achieve bidirectionality
+→ Only ”shallow” bidirectionality
+GPT is not bidirectional, thus no issues concerning causality BERT combines the best of both worlds:
+Self -Attention + (Deep) Bidirectionality
+
+### Masked Language Modeling (MLM)
+
+First of all:
+It has nothing to do with Masked Self-Attenion
+ 
+  *  Masked Self-Attention is an architectural detail in the decoder of a Transformer, i.e. used by e.g. GPT
+* Masked Self-Attention as a way to induce causality in the decoder
+* MLM is a modeling objective introduced to couple Self-Attention and (deep) bidirectionality without violating causality
+
+Masked Language Modeling: Training objective:
+Given a sentence, predict [MASK]ed tokens Generation of samples:
+Randomly replace* a fraction of the words by [MASK] *Sample 15% of the tokens; replace 80% of them by [MASK], 10% by a random token &
+leave 10% unchanged
+
+**Discrepancy between pre-training & fine-tuning:**
+[MASK]-token as central part of pre-training procedure [MASK]-token does not occur during fine-tuning
+
+**Modified pre-training task:**
+Predict 15% of the tokens of which only 80% have been replaced by [MASK]
+
+* 80% of the selected tokens:
+The quick brown fox → The quick brown [MASK]
+* 10% of the selected tokens:
+The quick brown fox → The quick brown went
+* 10% of the selected tokens:
+The quick brown fox → The quick brown fox
+
+**Next Sentence Prediction (NSP)**
+
+Next Sentence Prediction: Training objective:
+Given two sentences, predict whether s2 follows s1 Generation of samples: Randomly sample* negative examples (cf. word2vec)
+
+* 50% of the time the second sentence is the actual next sentence
+* 50% of the time it is a randomly sampled sentence
+
+Full Input:
+#todo
+[CLS] token as sequence representation for classification [SEP] token for separation of the two input sequences
+
+### Pre-Training BERT
+
+**Ingredients:**
+Massive lexical resources (BooksCorpus + Eng. Wikipedia) → 13 GB in total
+Train for approximately* 40 epochs
+4 (16) Cloud TPUs for 4 days for the BASE (LARGE) variant
+12 (24) Transformer encoder blocks with an embedding size of E = 768 (1024) and a hidden layer size H = E, H/64 = 12 (16) attention heads are used and the feed-forward size is set to 4H → 110M (340M) model parameters in total for BERTBase (BERTLarge )
+
+**Loss function:**LossBERT = LossMLM + LossNSP
+
+* 1.000.000 steps on batches of 256 sequences with a sequence length of 512 tokens
+
+Pre-Training BERT – Maximum sequence length
+
+**Limitation:**
+Source: Vaswani et al. (2017)
+
+BERT can only consume sequences of up to 512 tokens Two sentences for NSP are sampled such that
+lengthsentenceA + lengthsentenceB smaller or equal 512
+Reason: Computational complexity of Transformer scales quadratically with the sequence length
+→ Longer sequences are disproportionally expensive
+
+### Fine-Tuning BERT
+
+#TODO
+
+### Successors of BERT
+
+BERT (Devlin et al., 2018) is a bidirectional contextual embedding model purely relying on Self-Attention by using multiple Transformer encoder blocks.
+BERT (and its successors) rely on the Masked Language Modelling objective during pre-training on huge unlabelled corpora of text.
+
+#### GPT2
+
+Radford et al., 2019 massively scale up their GPT model from 2018 (up to 1.5 billion parameters). Despite the size, there are only smaller architectural changer, thus it remains a unidirectionally contextual model.
+Controversial debate about this model, since OpenAI (at first) refuses to make their pre-trained architecture publicly available due to concerns about “malicious applications”.
+ 
+#### XLNet
+
+Yang et al., 2019 design a new pre-training objective in order to overcome some weaknesses they spotted in the one used by BERT.
+The use Permutation Language Modelling to avoid the discrepancy between pre-training and fine-tuning introduced by the artificial MASK token.
+
+#### RoBERTa
+
+Liu et al., 2019 concentrate on improving the original BERT architecture by (1) careful hyperaparameter tuning (2) abandoning the additional Next Sentence Prediction objective (3) increasing the pre-training corpus massively.
+Other approaches now more and more concentrate on improving, down-scaling or understanding BERT. 
+A new research direction called BERTology emerges.
+
+#### T5
+
+T5 (Raffel et al., 2019) a complete encoder-decoder Transformer based architecture (text-to-text transfer transformer).
+They approach transfer learning by transforming all inputs as well as all outputs to strings and fine-tuned their model simultaneously on data sets with multiple different tasks.
+
+### BERTology
+
+**Post-BERT architectures:**
+
+Most architectures still rely on either an encoder- or a decoder-style
+type of model (e.g. GPT2 , XLNet )
+BERTology: Many papers/models which aim at ..
+* .. explanining BERT (e.g. Coenen et al., 2019 , Michel et al., 2019 ) * .. improving BERT ( RoBERTa , ALBERT )
+* .. making BERT more efficient ( ALBERT , DistilBERT )
+* .. modifying BERT ( BART )
+Overview on many different papers: https://github.com/tomohideshibata/BERT-related-papers
+
+### RoBERTa
+
+**Improvements in Pre-Training:**
+
+Authors claim that BERT is seriously undertrained
+Change of the MASKing strategy
+
+* BERT masks the sequences once before pre-training → RoBERTa uses dynamic MASKing
+  * RoBERTa sees the same sequence MASKed differently
+
+* RoBERTa does not use the additional NSP objective during pre-training 160 GB of pre-training resources instead of 13 GB 
+* Pre-training is performed with larger batch sizes (8k)
+
+### Dynamic vs. Static Masking 
+
+**Static Masking (BERT):**
+
+* Apply MASKing procedure to pre-training corpus once 
+* (additional for BERT: Modify the corpus for NSP) 
+* Train for approximately 40 epochs
+
+**Dynamic Masking (RoBERTa):**
+
+* Duplicate the training corpus ten times
+* Apply MASKing procedure to each duplicate of the pre-training corpus
+* Train for 40 epochs
+* Model sees each training instance in ten different ”versions” (each version four times) during pre-training
+
+Architectural differences:
+Architecture (layers, heads, embedding size) identical to BERT
+50k token BPE vocabulary instead of 30k
+Model size differs (due to the larger embedding matrix) -> aprox. 125M (360M) for the BASE (LARGE) variant
+
+**Performance differences:**
+
+#TODO
+
+### ALBERT
+
+Changes in the architecture:
+Disentanglement of embedding size E and hidden layer size H
+* WordPiece-Embeddings (size E) context-independent
+* Hidden-Layer-Embeddings (size H) context-dependent
+* Setting H >> E enlargens model capacity without increasing the size of the embedding matrix,
+since O(V × H) > O(V × E + E × H) if H >> E.
+Cross-Layer parameter sharing
+Change of the pre-training NSP loss
+* Introduction of Sentence-Order Prediction (SOP)
+* Positive examples created alike to those from NSP
+* Negative examples: Just swap the ordering of sentences
+n-gram masking for the MLM task
+
+Notes:
+
+* In General: Smaller model size (because of parameter sharing) 
+* Nevertheless: Scale model up to almost similar size (xxlarge version) 
+* Strong performance compared to BERT
+
+#### Using BERT & Co.
+
+Native implementations:
+* BERT: https://github.com/google-research/bert RoBERTa:
+* https://github.com/pytorch/fairseq/tree/master/examples/roberta ALBERT: https://github.com/google-research/ALBERT
+
+**Drawbacks:**
+
+* Different frameworks use for the implementations
+* Different programming styles
+* Adaption of different models to custom problems can sometimes lead to a lot of redundant work
+
+# Lecture 11 Alternatives to BERT
 
 Limitations // Shortcomings of BERT
 Pretrain-finetune discrepancy
 BERT artificially introduces [MASK] tokens during pre-training
 [MASK]-token does not occur during fine-tuning
-→ Lacks the ability to model joint probabilities
-→ Assumes independence of predicted tokens (given the context)
+* Lacks the ability to model joint probabilities
+* Assumes independence of predicted tokens (given the context)
 Maximum sequence length
 Based on the encoder part of the Transformer
-→ Computational complexity of Self-Attention mechanism scales quadratically with the sequence length
+* Computational complexity of Self-Attention mechanism scales quadratically with the sequence length
 BERT can only consume sequences of length smaller or equal 512
 
 XLNet Yang et al., 2019
@@ -608,7 +938,7 @@ Standard (Single-head) Self-Attention:
 
 #todo 
 
-# GPT Models
+# GPT Models Lecture 12
 
 Transformer
 Training: Masked language modeling (MLM)
@@ -729,30 +1059,66 @@ Just a language model but still gets common sense well.
 Question about physics in high school.
 Context: which palms produce the most heat example.
 
-### RACE Task 
+### RACE task 
 
 Long task and pick which continuation is the correct one.
+Huge gap between GPT 3 and SOTA. 
+Need to use state of language model to store stuff (short term memory)
 
-
-
-
-
-
+### SuperGLUE task 
 
 SuperGLUE
-BoolQ
+BoolQ (Yes/No, here about physics. Can have problem cannot go back; GPT3 doesnt so wekk)
 CB (true/false/neither)
-COPA
 RTE (similar to natural language inference) WiC
-WSC
 MultiRC (true/false)
-ReCoRD
 
-Context given to gpt3:
+### Wic task
+
+Yes/no: 
+Is the word used in the same way?
+Problem again GPT cannot go back and compare context.
+GPT3 cannot do that. 
+Terrible performance, also compared to BERT
+GPT3 cannot store and compare thing. 
+
+### COPA Task
+
+Compare two answers and pick correct one.
+Again physics, still comparably well. 
+
+### WSC (Winograd Schema Challenge) task 
+
+Similar to lambada but to make decision difficult because dependent on understanding of the text. 
+Performance again really bad.
+
+### ReCoRD task 
+
+Long context and decide whether continuation is correct or not.
+GPT is able to do well here.
+
+Superglue ends here.
+
+### ANLI task 
+
+Again far below state of the art. 
+More parameters probably able to do better.
+
+### SAT Analogies task 
+
+#TODO
+
+### Miscellaneous
+
+GPT3 can correct grammar.
+Language model learns correct sequence of words and hence it is not suprising.
+
+## Context given to GPT3:
+
 * Three “training” articles to condition gpt3
 * Title and subtitle of a 4th article
-gpt3 then has to generated the body of the 4th article
-Evaluation: Humans are presented the human-generated original article and the gpt3-generated article and are asked to identify which is fake.
+* gpt3 then has to generated the body of the 4th article
+* Evaluation: Humans are presented the human-generated original article and the gpt3-generated article and are asked to identify which is fake.
 
 ### Summary
 
@@ -763,65 +1129,109 @@ This has great significance for preventing abuse of AI technology.
 
 ## GPT limitations
 
-Next generation 
+### Next generation 
 
-* Repetitions
-* Lack of coherence
-* Contradictions
+* Repetitions (can easily tell that generated texts have rep. and are not human generated)
+* Lack of coherence (normal human would not say on the follow up)
+* Contradictions (the dodgers scored 3:2 and later say they must have lost.)
 
+#### Common sense physics is a huge problem for gpt3.
 
-Common sense physics
 E.g., “If I put cheese in the fridge, will it melt?” See below
+GPT3 doesnt have experience in the real world. 
 
-Comparison tasks
-GPT3 performs poorly when two inputs have to be compared with each other or when rereading the first input might help.
-E.g., is the meaning of a word the same in two sentences (WiC). E.g., natural language inference, e.g., ANLI
-Not a good match for left-to-right processing model.
-Possible future direction: bidirectional models
+#### Comparison tasks:
 
-Self-supervised prediction on text
+* GPT3 performs poorly when two inputs have to be compared with each other or when rereading the first input might help.
+* E.g., is the meaning of a word the same in two sentences (WiC). E.g., natural language inference, e.g., ANLI
+* Not a good match for left-to-right processing model.
+* Possible future direction: bidirectional models
+* GPT3 CANNOT GO BACK
+
+#### Self-supervised prediction on text
+
 All predictions are weighted equally, but some words are more informative than others.
 Text does not capture the physical world.
 Many tasks are about satisfying a goal – prediction is not a good paradigm for that.
+This is about the fact that we always predict the next word.
+We go through the text to predict the next and we cannot learn things from this task we need for natural language understanding.
+Our behaviour as humans is goal oriented while computers not.
 
-Low sample efficiency
+#### Low sample efficiency (how well exploit text being trained on)
+
 Humans experience much less text than GPT3, but perform better.
 We need approaches that are as sample-efficient as humans, i.e., need much less text for same performance.
 
-Size/Interpretability/Calibration
-Difficult to use in practice due to its size. Behavior hard to interpret
-Probability badly calibrated
+#### Size/Interpretability/Calibration
 
-Discussion: Does GPT3 “learn” from context?
+* Difficult to use in practice due to its size.
+* Behavior hard to interpret.
+* Probability badly calibrated.
+
+In human discourse, we try to mix in interesting words from time to time.
+If you have sequence of words and now you are thinking about the next word, then you will have a long tail of words with low probability. 
+Humans select words that are unlikely.
+They select words that fit the context but GPT has a huge problem doing that. 
+Does GPT3 learn from context?
+
+### Discussion: Does GPT3 “learn” from context?
+
 GPT3 learns a lot in pretraining.
 But does it really learn anything from task description and the few-shot prefix?
 Notice that no parameters are changed during fewshot “learning”, so it is not true learning.
 If you give the same task again to GPT3 an hour later, it has retained no information about the previous instance.
 How much of human learning is “de novo”, how much just uses existing scales.
 
-Three OpenAI papers
+### Three OpenAI papers
+
 GPT (2018): Improving language understanding by generative pre-training
 GPT2 (2019): Language Models are Unsupervised Multitask Learners GPT3 (2020): Language Models are Few-Shot Learners
 We’re not interested here in the (small) differences between these papers and will focus on GPT3, but refer to it as GPT.
 Recommendation: Read GPT3 paper
 
-**Marcus & Davis (1)**
+#### GPT3 hype 
 
-(biological reasoning)
+Not really capable of writing an article.
+Wrote Reddit posts.
+Average quality on Reddit is pretty poor though.
+The verge talks about the text generating AI it said too dangerous to share.
+Very expensive to train this model.
+It is not widely accesible.
+Once you have trained the model, you can use it in many different ways. 
+It is not clear whether it is a knockout argument against it. 
+
+## **Marcus & Davis (1)** Anti-Article 
+
+### (biological reasoning)
+
 You poured yourself a glass of cranberry juice, but then you absentmindedly poured about a teaspoon of grape juice into it. It looks okay. You try sniffing it, but you have a bad cold, so you can’t smell anything. You are very thirsty.
-So GPT continues: you drink it. You are now dead. (physical reasoning)
+So GPT continues: you drink it. You are now dead. 
+
+### (physical reasoning)
 
 * You are having a small dinner party. You want to serve dinner in the living room. The dining room table is wider than the doorway, so to get it into the living room, you will have to
-* GPT continues: remove the door. You have a table saw, so you cut the door in half and remove the top half. (social reasoning)
+* GPT continues: remove the door. You have a table saw, so you cut the door in half and remove the top half.
+
+### (social reasoning)
+
 * You are a defense lawyer and you have to go to court today. Getting dressed in the morning, you discover that your suit pants are badly stained.
 * However, your bathing suit is clean and very stylish. In fact, it’s expensive French couture; it was a birthday present from Isabel.
 * You decide that you should wear GPT continues: the bathing suit to court. 
-* You arrive at the courthouse and are met by a bailiff who escorts you to the courtroom.(object and individual tracking)
+* You arrive at the courthouse and are met by a bailiff who escorts you to the courtroom.
+
+### (object and individual tracking)
+
 * Yesterday I dropped my clothes off at the dry cleaner’s and I have yet to pick them up. Where are my clothes?
-* GPT continues: I have a lot of clothes.(psychological reasoning)
+* GPT continues: I have a lot of clothes.
+
+### (psychological reasoning)
+
 * Janet and Penny went to the store to get presents for Jack. 
 * Janet said, “I will buy Jack a top.” “Don’t get Jack a top,” says Penny. “He has a top.
-* He will GPT continues: get a top.” “I will get Jack a top,” said Janet. (non sequiturs)
+* He will GPT continues: get a top.” “I will get Jack a top,” said Janet. 
+
+(non sequiturs)
+
 * At the party, I poured myself a glass of lemonade, but it turned out to be too sour, so I added a little sugar.
 * I didn’t see a spoon handy, so I stirred it with a cigarette.
 * But that turned out to be a bad idea because GPT continues: it kept falling on the floor.
@@ -830,17 +1240,20 @@ So GPT continues: you drink it. You are now dead. (physical reasoning)
 ## GPT: Discussion
 
 ### GPT: Ethical considerations
-In general, a machine does not know (and probably does not care) what consequences its words will have in the real world.
-* Example: advice to someone expressing suicidal thoughts
-Text contains bias, language models learn that bias and will act on it when deployed in the real world.
-* Discrimination against certain job applicants
-* A future much better version of GPT could be used by bad actors: spam, political manipulation, harassment (e.g., on social media), academic fraud etc.
+
+* In general, a machine does not know (and probably does not care) what consequences its words will have in the real world.
+  * Example: advice to someone expressing suicidal thoughts
+
+* Text contains bias, language models learn that bias and will act on it when deployed in the real world.
+  * Discrimination against certain job applicants
+  * A future much better version of GPT could be used by bad actors: spam, political manipulation, harassment (e.g., on social media), academic fraud etc.
+
 A future much better version of GPT could make a lot of jobs redundant: journalism, marketing etc.
 One partial solution: legal requirement to disclose automatic generation (“Kennzeichungspflicht”)
 
  GPT authors on APTs (advanced persistent threats, e.g., North Korea)
-. . . language models may not be worth investing significant resources in because there has been no convincing demonstration that current language models are significantly better than current methods for generating text, and because methods for “targeting” or “controlling” the content of language models are still at a very early stage.
-   
+
+. . . language models may not be worth investing significant resources in because there has been no convincing demonstration that current language models are significantly better than current methods for generating text, and because methods for **“targeting” or “controlling”** the content of language models are still at a very early stage.
 
 Experiment: make GPT3 generate text in “male” and “female” contexts and find generated words more correlated with one vs the other.
 Male contexts: “He was very . . . ”, “He would be described as . . . ”
@@ -855,15 +1268,62 @@ GPT3 authors: not really a problem NLP people can address, need interdisciplinar
 
 **Response to green concerns about GPT3**
 
-You only have to train the model once. If you then use it a lot, that can be efficient.
+You only have to train the model once. 
+If you then use it a lot, that can be efficient.
 Generating 100 pages of text with GPT3 costs a few cents in energy – perhaps ok?
-Distill the model once it is trained (e.g., Distilbert)
+Distill the model once it is trained (e.g., Distilbert).
 
-
-
-# Multilingual models 
+# Multilingual models Lecture 13
 
 ## mBERT 
+
+Transformer
+Training: Masked language modeling (MLM)
+BERT learns an enormous amount of knowledge about language and the world through MLM training on large corpora.
+Applications: finetune on a particular task
+Combines: (i) leveraging pretraining on large corpora and (ii) supervised training on specific task
+Great performance!
+In this lecture: how can we make BERT multilingual?
+
+https://github.com/google-research/bert/blob/master/ multilingual.md (no publication)
+Trained on top 100 languages with largest Wikipedias
+For training and vocab generation:
+oversample low-resource, undersample high-resource
+110K shared WordPiece vocabulary
+There is no marking of the language (e.g., no special symbol to indicate that a sentence is an English sentence).
+
+* makes zero-shot training possible 
+
+accent removal, punctuation splitting, whitespace tokenization
+BERT-Base, Multilingual Cased: 104 languages, 12 layers, 768-hidden, 12 heads, 110M parameters
+
+### Evaluation: XNLI
+
+https://cims.nyu.edu/~sbowman/xnli/
+Derived from MultiNLI
+https://cims.nyu.edu/~sbowman/multinli/
+Crowd-sourced collection of 433k sentence pairs annotated with textual entailment information
+Multigenre
+Task: for a sentence pair, classify it as neutral, contradiction or entailment
+
+### Example for neutral
+
+Your gift is appreciated by each and every student who will benefit from your generosity. <? > Hundreds of students will benefit from your generosity.(genre: letters)
+
+### Example for contradiction
+
+if everybody like in August when everybody’s on vacation or something we can dress a little more casual <? > August is a black out month for vacations in the company.
+
+### Example for entailment
+
+At the other end of Pennsylvania Avenue, people began to line up for a White House tour. <? > People formed a line at the end of Pennsylvania Avenue.
+
+
+## XNLI
+
+5000 test pairs and 2500 dev pairs from MNLI
+Translated (by crowd sourcing) into French, Spanish, German, Greek, Bulgarian, Russian, Turkish, Arabic, Vietnamese, Thai, Chinese, Hindi, Swahili, Urdu
+“The corpus is made to evaluate how to perform inference in any language (including low-resources ones like Swahili or Urdu) when only English NLI data is available at training time.”
 
 ## XLM-R
 
