@@ -103,7 +103,6 @@ EMNLP 2017: The computer negotiates with humans in natural language in order to 
 Detect atypical items or events.
 Common approach: Estimate density and identify items that have low probability.
 
-
 Examples:
 
 * Quality assurance
@@ -119,12 +118,14 @@ ACL 2017: Schizophrenia patients can be detected by their non-standard use of me
 ### Some Algorithms for unsupervised ML
 
 #### Unsupervised
+
 Clustering (k-means)
 Clustering (partition around medoids (PAM)) PCA (principal components analysis) k-nearest neighbor
 Isolation forest4
 Autoencoders
 
 ### Performance Measures
+
 “A computer program is said to learn [...] with respect to some [...] performance measure P, if its performance [...] as measured by P, improves [...]”
 Quantitative measure of algorithm performance. Task-specific.
 
@@ -161,14 +162,16 @@ Neural Networks
 First training methods for deep nonlinear NNs appeared in the 1960s (Ivakhnenko and others).
 Increasing interest in NN technology (again) since around 10 years ago (“Neural Network Renaissance”):
 Orders of magnitude more data and faster computers now.
+
 Many successes:
+
 * Image recognition and captioning
 * Speech regonition
 * NLP and Machine translation
 * Game playing (AlphaGO)
 
+**Machine Learning**
 
-Machine Learning
 Deep Learning builds on general Machine Learning concepts
 L is called loss function or cost function (we will discuss it further in the next chapter).
 Fitting data vs. generalizing from data
@@ -186,7 +189,7 @@ Summary
 * Classification
 * Regression
 *
-# Deep Learning
+### Deep Learning
 
 * many successes in recent years
 * feature learning instead of feature engineering
@@ -320,9 +323,11 @@ While the loss functions are used for optimization purposes, performance measure
 Many supervised tasks are classification tasks, often with two classes (binary task), e.g. sentiment analysis (positive or negative sentiment of a text), but in principle a finite number of classes is possible. In this case, many measures have been proposed which are based on the confusion matrix. Example: consider a classifier for images showing either a donkey or a horse:
 
 ### Performance measures (supervised learning) II
+
 case). Then we call the prediction of a donkey as donkey as true positive (TP), the prediction of a horse as a horse as true negative (TN), the prediction of a donkey as a horse as false negative (FN) and the prediction of a horse as a donkey as false positive (FP). All performance measures build on these four numbers:
 
 ### Performance measures (supervised learning) III
+
 In multiclass problems, a generalization can be obtained by two approaches. One approach considers all correct predictions versus all wrong predictions (e.g. Micro F1 score). The second focuses on one class and pools all other classes together. Then, binary measures can be calculated for each class separately and then summarized into one measure (e.g. Macro F1 score).
 
 ### Sigmoid function
@@ -576,7 +581,9 @@ I Penalize large L1 norm (aka LASSO, induces sparsity)
 
 The surface of the objective function is now a combination of the original cost, and the regularization penalty.
 
-# Lecture 5 Motivation word embeddings 
+# Lecture 5 Word2Vec 
+
+## Motivation word embeddings 
 
 Deep Learning models understand numerical representations 
 Texts are sequences of symbolic units
@@ -2368,6 +2375,49 @@ At the other end of Pennsylvania Avenue, people began to line up for a White Hou
 Translated (by crowd sourcing) into French, Spanish, German, Greek, Bulgarian, Russian, Turkish, Arabic, Vietnamese, Thai, Chinese, Hindi, Swahili, Urdu
 “The corpus is made to evaluate how to perform inference in any language (including low-resources ones like Swahili or Urdu) when only English NLI data is available at training time.”
 
+## Big mystery
+
+Why does this model learn a multilingual representation even though it has zero multilingual signal?
+Recall that mBERT is trained on a multlingual corpus – but there are no alignments of words or even sentences. In fact, the corpora are not parallel.
+Maybe the shared vocabulary between languages is crucial?
+* E.g., names are often the same across languages We will answer this in the last section today.
+
+
 ## XLM-R
 
-## Investingating the mystery 
+XLM-R = XLM-RoBERTa
+Quite similar to mBERT
+Trained on 100 languages
+Much larger training corpus
+(2 terabytes CommonCrawl vs. Wikipedia)
+Better performance
+Claim: performance competitive with monolingual model As in the case of mBERT: no parallel data is used.
+
+### Curse of multilinguality
+
+“more languages leads to better cross-lingual performance on low-resource languages up until a point, after which the overall performance on monolingual and cross-lingual benchmarks degrades.”
+However, it’s easy to address this, simply by increasing the capacity of the model.
+
+* The transfer-interference trade-off: Low-resource languages benefit from scaling to more languages, until dilution (interference) kicks in and degrades overall performance.
+* Adding more capacity to the model alleviates the curse of multilinguality, but remains an issue for models of moderate size.
+* Multilingual models can benefit from allocating a higher proportion of the total number of parameters to the embedding layer even though this reduces the size of the Transformer.
+
+#### Fake-English: No vocabulary overlap with English
+
+Good performance without vocabulary overlap
+
+Factors that influence degree of multilinguality
+(i.e., shared English / Fake-English representations)
+Limited model capacity:
+overparameterization decreases multilinguality
+Shared special tokens and position embeddings contribute to multilinguality
+Extreme linguistic divergence destroys multilinguality (experiment in paper: reverse word order)
+Lack of parallelism reduces multilinguality
+(even though parallelism is not directly exploited)
+Recap: shared vocabulary is not necessary.
+
+Why are multilingual contextualized model multilingual?
+Question: Why are these models multilingual even though there is no direct multilingual training signal.
+Answer: There are many different factors all of which play a role.
+The most important one seems to be limited model capacity:
+If there are not enough parameters for independent representation of the languages, parameter sharing is forced upon the model during training.
