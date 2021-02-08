@@ -356,30 +356,61 @@ Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
 #todo
 
 
-# Lecutre 8 Self Attention and the Transformers 
+# Lecutre 8 Self-Attention and the Transformers 
 
 ## Limitations of RNN's
 
-In an RNN, at a given point in time j, the information about all past is “crammed” into the state vector
+In an RNN, at a given point in time j, the information about all past is “crammed” into the state vector h_j and c_j for LSTM
 So for long sequences, the state becomes a bottleneck inputs x for an LSTM)
 Especially problematic in encoder-decoder models (e.g., for Machine Translation)
 Solution: Attention (Bahdanau et al., 2015) – an architectural modification of the RNN encoder-decoder that allows the model to “attend to” past encoder states
+
+### Basic Recipe: 
+
+* One query vector q
+* J key vector K
+* J value vector V
+* Scoring function a (maps query key pair to scalar)
+
+* Step 1: Apply a to q and all keys kj to get scores (one per key):
+* Step 2: Turn e into a probability distribution with the softmax
+function
+* Step 3: alpha-weighted sum over V yields one dv -dimensional output vector 
+*  Intuition: alpha_j is how much “attention” the model pays to vj when computing o.
+
+### Analogy
+
+* maps with geolocations. K
+* current weather conditions V
+* q vector which is a new location 
+* for this location we want the weather location (q request for information)
+* e_j is the relvance and is the inverse difference between weather condition and geolocation 
+* weighted sum of known weather conditions aka. stations that are close to the weather conditions 
 
 ### Attention in neural networks
 
 Contrary to our geolocation example, the q, kj and vj vectors of a neural network are produced as a function of the input and some trainable parameters
 So the model learns which keys are relevant for which queries, based on the training data and loss function
+What model learns is based on the training data.
+Model learned french words via training data without command.
 
-No (or few) assumptions are baked into the architecture (no notion of which words are neighbors in the sentence, sequentiality, etc.)
-The lack of prior knowledge often means that the Transformer requires more training data than an RNN/CNN to achieve a certain performance
-But when presented with sufficient data, it usually outperforms them After Christmas: Transfer learning as a way to pretrain Transformers
+* No (or few) assumptions are baked into the architecture (no notion of which words are neighbors in the sentence, sequentiality, etc.)
+* The lack of prior knowledge often means that the Transformer requires more training data than an RNN/CNN to achieve a certain performance
+* But when presented with sufficient data, it usually outperforms them 
+* After Christmas: Transfer learning as a way to pre-train Transformers
 on lots of data
 
 The Bahdanau model is still an RNN, just with attention on top.
 Architecture that consists of attention only: Transformer (Vaswani et al. (2017), “Attention is all you need”)
 
-* Cross attention and self attention 
+encoder left, decoder on right. 
+If you dont need a decoder, can only use encoder. 
+Orginally proposed as sequences to sequence model. 
+Input Y, (e.g. German Translation). 
+Attention to transformer box. Every block is repeated n times. 
+Each block consists of multiple layers. 
 
+### Cross attention and self attention 
 
 We can use attention on many different “things”, including:
 
@@ -387,14 +418,78 @@ We can use attention on many different “things”, including:
   * The nodes of knowledge graphs
   * The words of a vocabulary
 
+Here, we focus on scenarios where the query, key and value vectors represent tokens (e.g., words, characters, etc.) in sequences (e.g., sentences, paragraphs, etc.).
+
+* Cross-attention (Assume we have 2 sequences. Y attends to X) 
+* Self-attention (Only one sequences and X attends to itself; X=Y)
+
+### Cross-attention 
+
+Here, we describe cross-attention. Self-attention can easily be derived by assuming X = Y .
+Three W matrices.
+We transform Y into a matrix of query vectors:
+We transform X into matrices of key and value vectors:
+
+To calculate the e scores (step 1 of the basic recipe), Vaswani et al. use a parameter-less scaled dot product instead of Bahdanau’s complicated FFN:
+
+#TODO
+
+* Note: This requires that dq = dk
+* Attention weights and outputs are defined like before (steps 2 and 3 of the basic recipe):
+
+## Parallelized attention 
+
+We want to apply our attention recipe to every query vector qj.
+We could simply loop over all time steps 1 smaller or equal j  smaller or equal y and calculate each oj independently.
+Then stack all oj into an output matrix.
+But a loop does not use the GPU’s capacity for parallelization.
+So it might be unnecessarily slow.
+
+Do some inputs (e.g., qj) depend on previous outputs? 
+If not, we can parallelize the loop into a single function:
+Attention in Transformers is usually parallelizable, unless we are doing
+autoregressive inference (more on that later).
+By the way: The Bahdanau model is not parallelizable in this way, because si (a.k.a. the query of the i + 1’st step) depends on ci (a.k.a. theattention output of the i’th step), see last lecture:
+
+Step 1: The parallel application of the scaled dot product to all query-key pairs can be written as:
+Step 2: Softmax with normalization over the second axis (key axis):
+Step 3: Weighted sum
+
+#TODO
+
+GPUs like matrix multiplications → usually a lot faster than
+RNN!
+But: The memory requirements of E and A are O(Jy Jx )
+A length up to about 500 is usually ok on a medium-sized GPU (and most sentences are shorter than that anyway).
+But when we consider inputs that span several sentences (e.g., paragraphs or whole documents), we need tricks to reduce memory. These are beyond the scope of this lecture.
+
+## Multi-layer attention
+
+Sequential application of several attention layers, with separate parameters
+The transformer: Sequential application of transformer blocks 
+There are some additional position-wise layers inside the Transformer undergoes some additional transformations before becoming the input to the next Transformer block n + 1
+
+## Multi-head Attention 
+
+Application of several attention layers (“heads”) in parallel.
+Several attention layers are called heads.
+Each Theta contains three W matrixes.
+For every head, compute in parallel:
+Concatenate all O along their last axis; then down-project the concatenation with an additional parameter matrix.
+Conceptually, multi-head attention is to single-head attention like a filter bank is to a single filter (Lecture 6 on CNNs).
+Division of labor: different heads model different kinds of inter-word relationships
+
+## Masked self-attention 
+
+Recap: RNNs for autoregressive language modeling or decoding
 
 
-* Parallelized attention 
-* Multi-layer attention
-* Masked self-attention 
-* Residual connections and layer normalization 
-* The Transformer architecture 
-* Position encodings
+
+## Residual connections and layer normalization 
+
+## The Transformer architecture 
+
+## Position encodings
 
 
 
