@@ -138,7 +138,7 @@ Design choice: Fine-tune embeddings on task or freeze them?
 
 Applications of pre-trained word embeddings
 
-# CNN
+# Lecture 6 CNN
 
 An architecture is an abstract design for a neural network
 
@@ -160,14 +160,13 @@ Of course not.
 But they are a good way of thinking about why certain architectures are popular for certain problems.
 Also, for limiting the search space when deciding on an architecture for a given project.
 
-
-Convolutational layers 
+# Convolutational layers 
 
 Technique from Computer Vision (esp. object recognition), by LeCun et al., 1998
 Adapted for NLP (e.g., Kalchbrenner et al., 2014) Filter banks with trainable filters
 So what is a filter? What is a filter bank?
 
-1-D convolution 
+## 1-D convolution 
 
 Let’s say that we want to train a linear regression model to predict some variable of interest from each datapoint.
 Since the raw data is noisy, it makes sense to smoothe it with our rolling average filter first:
@@ -177,7 +176,6 @@ We can manually engineer a filter that we think is better, for example:
 #todo
 Alternative: Let the model choose the optimal filter parameters, based on the training data.
 How? Gradient descent!
-
 
 **Bias and nonlinearities:**
 * In a real CNN, we usually add a trainable scalar bias b, and we apply a nonlinearity g (such as the rectified linear unit):
@@ -236,7 +234,7 @@ few positions (depending on filter size) Hierarchy of features from simple to co
 * With every layer, the information travels further, and the feature vectors become more complex
 * Pixels → edges → shapes → small objects → bigger objects
 
-**Pooling layers**
+# **Pooling layers**
 
 Pooling layers are parameter-less
 Divide axes of H (excluding the filter/feature axis) into a coarse-grained “grid”.
@@ -249,7 +247,7 @@ In return, pooling allows us to aggregate features from a local neighborhood int
 In computer vision, we often apply pooling between convolutional layers.
 Repeated pooling has the effect of reducing tensor sizes.
 
-**CNNs in NLP**
+# **CNNs in NLP**
 
 Images are 2D, but text is a 1D sequence (of words, n-grams, etc).
 Words are usually represented by M-dimensional word embeddings (e.g., from Word2Vec)
@@ -266,7 +264,7 @@ If the task is a word-level task (i.e., we need one output vector per word), we 
 If the task is some sentence-level task (i.e., we need a single vector to represent the entire sentence), we usually do a “global” pooling step over the entire sentence after the last convolutional layer:
 
 
-# RNN 
+# Lecture 7 RNN 
 
 Assumption: Text is written sequentially, so our model should read it sequentially
 “RNN”: class of Neural Network architectures that process text sequentially (left-to-right or right-to-left)
@@ -354,7 +352,6 @@ Step 2: Turn e into probability distribution with the softmax function
 Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
 
 #todo
-
 
 # Lecutre 8 Self-Attention and the Transformers 
 
@@ -478,25 +475,186 @@ For every head, compute in parallel:
 Concatenate all O along their last axis; then down-project the concatenation with an additional parameter matrix.
 Conceptually, multi-head attention is to single-head attention like a filter bank is to a single filter (Lecture 6 on CNNs).
 Division of labor: different heads model different kinds of inter-word relationships
+Standard for transformer models. 
 
 ## Masked self-attention 
 
 Recap: RNNs for autoregressive language modeling or decoding
 
+In autoregressive language modeling, or in the decoder of a sequence-to-sequence model, the task is to always predict the next word
+In an RNN, a given state h_j depends **only** on past inputs. 
+Thus RNN is unable to cheat.
+Unable to look at future inputs before predicting them.
 
+### Self-attention for autoregressive LM & decoding
+
+With attention, all oj depend on all vj' (and by extension, all xj').
+This means that the model can easily cheat by looking at future words (red connections)
+Useless at inference time when not given.
+
+So when we use self-attention for language modeling or in a sequence-to-sequence decoder, we have to prevent oj from attending to any vj' where j' > j.
+By hardcoding ej,j' = -infinity when j' > j (in practice, “infinity” is just a large constant)
+That way, exp(ej,j' ) = alpha_j,j' = 0, so vj' has no impact on oj
+
+### Parallelized masked self-attention
+
+Step 1: Calculate E like we usually would Step 1B:
+
+During training, when targets are known, we use parallelized masked attention
+At inference time, when we don’t know what the targets are, we have to decode the prediction in a loop
+Slower (as not paralelized), but at least we don’t have to worry about masking anymore
 
 ## Residual connections and layer normalization 
+
+Benefits: Information retention (we add to X but don’t replace it)
+
+Benefits: Allows us to normalize vectors after every layer; helps against exploding activations on the forward pass
+In the Transformer, layer normalization is applied position-wise, i.e., every oj is normalized independently
+
+#TODO
 
 ## The Transformer architecture 
 
 ## Position encodings
 
+Can self-attention model word order?
+Our model consists of a self-attention layer on top of a simple word embedding lookup layer. (For simplicity, we only consider one head, but this applies to multi-head attention as well.)
+Example: “john loves mary” vs. “mary loves john”
 
 
+In other words: The representation of mary is identical to that of mary, and the representation of john is identical to that of john
+
+Question: Can the other layers in the Transformer architecture (feed-forward net, layer normalization) help with the problem?
+
+  * No, because they are apply the same function to all positions. 
+* Question: Would it help to apply more self-attention layers?
+  * No. Since the representations of identical words are still identical in O, the next self-attention layer will have the same problem.
+* So... does that mean the Transformer is unusable?
+* Luckily not. We just need to ensure that input embeddings of identical words at different positions are not identical.
+
+## Lecture 8b)  Hyperparameter Optimization 
+
+Things that may affect the performance of a model on a task, without being a trainable parameter in theta
+
+* input (word embedding) 
+* size hidden state size (RNN) 
+* number of filters (CNN) 
+* filter size (CNN)
+* number of heads (Transformer)
+* hidden size of queries/keys/values (Transformer)
+* number of layers/blocks
+* choice of nonlinearity (ReLU vs. tanh vs. ...)
+* batch size
+* factor for L1, L2 regularization
+* dropout probability
+* learning rate
+* choice of optimizer (SGD vs. Adam vs. Adagrad vs. ...) 
+* parameters of optimizer (e.g., momentum, ...)
+* number of epochs (early stopping)
+
+* Also known as “hyperparameter tuning”
+* The process of choosing the best hyperparameters for a given architecture and task
+* Different from training your regular parameters, because hyperparameters are not optimized by gradient descent
+
+### Train / Validation / Test sets
+
+Needed: separate train/validation*/test sets 
+
+* a.k.a. dev(elopment), heldout, valid(ation)
+* Many existing datasets come with a predefined train/validation/test split; if that is the case, use the predefined split
+* Otherwise, you should split the data yourself (randomly!); 80/10/10 is usually fine, unless there is too little data (see cross-validation)
+* You should always report the absolute and relative sizes of the sets
+
+For every hyperparameter configuration:
+
+* Create model
+* Train model on the training set
+* Evaluate model on validation set
+
+Keep the model that had the best performance on the validation set Evaluate that model on the test set
+
+## CV 
+
+Useful when there is very little data, so that you cannot afford separate train and validation sets.
+Split training set into N subsets (“folds”) For every hyperparameter configuration:
+* Foreveryfold 1 smaller or equal n smaller or equal N:
+* Fold n is your validation set, the other folds are your training set
+* Create, train and evaluate the model
+* Average the validation performance over all folds
+Keep the configuration that had the best average validation
+performance
+Train a model with that configuration on the full training set (all folds together)
+Measure the model’s performance on the test set
+
+### The importance of the test set 
+
+* Hyperparameter optimization means overfitting to the validation set 
+* You should never do hyperparameter optimization on the test set
+* The test set should only be used once, to evaluate your final model.
+* Otherwise, your test set is “spoiled”.
 
 
+### A hyperparameter configuration
 
-## Hyperparameter Optimization 
+A hyperparameter configuration is a specific choice of hyperparameters.
+Every hyperparameter has a range, or a set of permissible values.
+
+### Defining hyperparameter ranges
+
+Usually, the range will be informed by your domain expertise:
+
+* Lots of data -> low risk of overfitting -> try big hidden sizes / more layers...
+* Little data -> high risk of overfitting -> try low hidden sizes / fewer layers ...
+* Some values just don’t make sense (learning rate of 10000, filter size 1 in a CNN)
+
+In practice, your range will also be limited by your resources (e.g., GPU memory). Always report the range, so that others can reproduce your evaluation.
+
+Discretizing continuous ranges
+Continuous hyperparameters (e.g., hidden size, batch size, number of filters) should be discretized.
+For open-ended hyperparameters, use an (approximate) log scale, e.g.,
+
+* hidden size in 50, 100, 200, 500, 1000
+* batch size in 16, 32, 64, 128
+
+Categorical hyperparameters (e.g., optimizer or nonlinearity) can be treated as a finite set
+
+How to search
+Brute Force?
+
+* Pro: Exhaustive
+* Con: Search space grows exponentially.
+
+Intuition: Some hyperparameters have a big effect, others have a small effect. A configuration that gets the first group right will be almost as good as the optimal configuration.
+
+Uniform sampling?
+
+* Pro: Easy to implement, good results in practice
+* Con: Will waste resources on configurations that have little chance of success (e.g., if we have previously found that all configurations with a hidden size of 20 produce bad results, we should stop sampling that particular value)
+
+### Shifting window search (credit to Ben Roth)
+
+For every continuous hyperparameter, define a small window of the range
+For N iterations:
+
+* Use the random sampling method N' times, but sample only from the windows.
+* For each hyperparameter, identify the value that led to the best performance.
+* Shift that window, so that the best value lies in the center
+
+Not applicable to hyperparameters whose values are unordered sets (i.e., categorical hyperparameters)
+
+### Evolutionary algorithm
+
+Start with a random set of configurations (population) For N iterations:
+
+* Delete the worst-performing configurations (survival of the fittest)
+* Randomly combine best-performing hyperparameter configurations to produce “children” (crossover).
+* Inject random changes to explore new possibilities (mutations).
+
+### How to search 
+
+* For reproducibility, you should always provide details about your method of hyperparameter search
+* That includes how many iterations you did, and any search-specific parameters (e.g., mutation probability, ...)
+
 
 # Lecture 9 Transfer Learning 
 
