@@ -3,12 +3,510 @@ title: "Deep Learning for NLP Summary"
 author: "Daniel Saggau"
 date: "2/4/2021"
 output: pdf_document
-fontsize: 12 pt
+fontsize: 9 pt
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Lecture 1 Chapter 1: Introduction to Machine Learning – Overview
+
+## Why Machine Learning is Useful Today
+
+Humans get lost in the lake of ever-growing volumes and varieties of available data Big Data , thus automatic methods for analyzing the data or making decisions based on the data are necessary.
+Unstructured data (e.g. text-heavy data) Unstructured Data often needs a lot of preprocessing before it can be further used. 
+For humans this is usually an awkward task and is better delegated to a ”machine”. 
+Scientific laws (e.g. laws of classical mechanics) can most often not be applied to the data at hand, we can only learn something (usually called a model) from the observed example data.
+Accurate model building can be a time-consuming and frustrating process, especially for complex data and has to be done again and again for different data. 
+Machine learning promises to reduce the use of human resources, also leading to more accurate models.
+
+## Disadvantages of Machine Learning
+
+The resulting models are often black boxes. That makes it often difficult to evaluate the reliability and robustness of a model. Since there is a zoo of available ML algorithms, model agnostic methods are needed.
+It may be difficult to explain and interpret a model. For example, a credit scoring model should be transparent why a certain customer is getting a credit but another not.
+The model can only learn from the data which is available to train it. If the training data does not reflect or cover the target population well or contains stereotypes (e.g. gender stereotypes in text data), its application may lead to so-called biased results.
+The computational resources needed are often very high (e.g. GPUs are still expensive).
+Depending on the complexity of the problem, a high number of examples (statistically: a high sample size) is needed to build accurate models.
+
+“A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”
+(Mitchell 1997)
+Learning: Attaining the ability to perform a task T.
+A set of examples (“experience”) represents a more general task.
+Examples are (usually) described by features. The features are often represented by numeric vectors x in Rm (sometimes also by matrices, tensors).
+
+
+Typical rectangular data sets are defined as follows. Dataset: collection of examples
+Data is stored in a design matrix:
+m: number of examples n: number of features
+Examples: Xi,j is the count of feature j (e.g. a stem form) in document i or the intensity of the j’th pixel in image i
+
+## Characterization of the Learning Process
+
+An often used characterization is supervised versus unsupervised learning. Unsupervised learning:
+* Model the data in X , or find interesting properties of X .
+* Example: Clustering (find groups of similar images/documents)
+* Training data: only X .
+Supervised learning:
+* Predict specific additional properties from X
+* E.g., sentiment classification: Predict sentiment (1–5) of amazon
+reviews
+* In the training data, additional labels (the outputs) are available for
+each example, i.e. an additional label vector y in Rm together with the
+input X can be used for training the model.
+* The task is then to predict the labels of new data, where only the
+features X are known.
+* The performance of this prediction is measured by a loss function and
+the task is usually solved by an optimization which minimizes the loss.
+
+## Supervised and Unsupervised Learning: data generation process (DGP)
+
+Unsupervised learning: Learn interesting properties, such as the probability distribution p(x), i.e. estimate the distribution Supervised learning: learn mapping from x to y, typically by estimating the conditional distribution p(y|x). 
+The supervised learning task is often formulated as the problem of estimating (or approximating) a function f , such that
+where epsilon is a random component (error term) describing the probabilistic nature of the task.
+Supervised learning in an unsupervised way (Bayes theorem):
+Note: if y is continuous, the sum (in the denominator) must replaced by an integral.
+
+Machine Learning Tasks
+Types of Tasks: Classification
+Regression
+Structured Prediction Anomaly Detection Synthesis and sampling Imputation of missing values Denoising
+Clustering
+Reinforcement learning
+...
+
+### Task: Classification
+
+Which of k classes does an example belong to? f :Rn →{1...k}
+Typical example: Categorize image patches
+* Feature vector: color intensities for each pixel; derived features.
+* Output categories: Predefined set of labels
+
+### Task: Regression
+Predict a numerical value given some input.
+
+### Task: Structured Prediction
+
+Predict a multi-valued output with special inter-dependencies and constraints.
+Typical examples:
+* Part-of-speech tagging
+* Syntactic parsing
+* Machine Translation
+
+Often involves search and problem-specific algorithms.
+
+### Task: Reinforcement Learning
+In reinforcement learning, the model (also called agent) needs to select a series of actions, but only observes the outcome (reward) at the end.
+The goal is to predict actions that will maximize the outcome.
+EMNLP 2017: The computer negotiates with humans in natural language in order to maximize its points in a game
+
+### Task: Anomaly Detection
+Detect atypical items or events.
+Common approach: Estimate density and identify items that have low probability.
+
+
+Examples:
+
+* Quality assurance
+* Detection of criminal activity
+
+Often items categorized as outliers are sent to humans for further scrutiny.
+
+### Task: Anomaly Detection
+
+ACL 2017: Schizophrenia patients can be detected by their non-standard use of metaphors, and more extreme sentiment
+ expressions.
+
+### Some Algorithms for unsupervised ML
+
+#### Unsupervised
+Clustering (k-means)
+Clustering (partition around medoids (PAM)) PCA (principal components analysis) k-nearest neighbor
+Isolation forest4
+Autoencoders
+
+### Performance Measures
+“A computer program is said to learn [...] with respect to some [...] performance measure P, if its performance [...] as measured by P, improves [...]”
+Quantitative measure of algorithm performance. Task-specific.
+
+Discrete vs. Continuous Loss Functions
+Discrete Loss Functions
+* Accuracy (how many samples were correctly labeled?)
+* Error Rate (1 - accuracy)
+* Precision / Recall
+* Accuracy may be inappropriate for skewed label distributions, where
+relevant category is rare. Often used is the F1-Score (harmonic mean of precision and recall):
+* Discrete loss functions cannot indicate how wrong a wrong decision is.
+* They are not differentiable (hard to optimize)
+* Often algorithms are optimized using a continuous loss (e.g. hinge loss) and evaluated using another loss (e.g. F1-Score).
+
+### Examples for Continuous Loss Functions
+
+Squared error (regression): (y - f (x ))2 Hinge loss (classification):
+* max(0,1-f(x)·y)
+* (assume that y in {-1, 1})
+...
+These loss functions are differentiable. 
+So we can use them for gradient descent (more on that later
+
+### Deep Learning
+
+Learn complex functions, that are (recursively) composed of simpler functions.
+Many parameters have to be estimated.
+Main Advantage: Feature learning
+
+* Models learn to capture most essential properties of data (according to some performance measure) as intermediate representations.
+* No need to hand-craft feature extraction algorithms
+
+Neural Networks
+First training methods for deep nonlinear NNs appeared in the 1960s (Ivakhnenko and others).
+Increasing interest in NN technology (again) since around 10 years ago (“Neural Network Renaissance”):
+Orders of magnitude more data and faster computers now.
+Many successes:
+* Image recognition and captioning
+* Speech regonition
+* NLP and Machine translation
+* Game playing (AlphaGO)
+
+
+Machine Learning
+Deep Learning builds on general Machine Learning concepts
+L is called loss function or cost function (we will discuss it further in the next chapter).
+Fitting data vs. generalizing from data
+
+Summary
+
+# Machine learning definition
+
+* Data
+* Task
+* Cost function
+
+# Machine learning tasks
+
+* Classification
+* Regression
+*
+# Deep Learning
+
+* many successes in recent years
+* feature learning instead of feature engineering
+* builds on general machine learning concepts
+
+# Lecture 2 Introduction to Machine Learning – ML Basics
+
+## Overview
+
+* Linear Algebra
+* Probabilities in NLP
+* Train-test-Splits
+* Loss functions 
+* Performance measures
+* Useful functions
+
+## Scalars, vectors, matrices and tensors I
+
+## Transpose
+
+## Addition
+
+Two matrices A and B can usually only be added if they have the same dimensions. The addition C = A + B is done element by element, i.e. cij = aij + bij . Example
+
+
+### Probabilities in NLP
+
+* In NLP, probabilities are put on the words of a corpus or sequences of words (e.g. a sentence)
+* These distributions are discrete because each word or each sequence of words is treated as a possible outcome
+* Language models are based on probabilities and maximization of the log-likelihood (or minimization of the negative log-likelihood), which is also based on (log-)probabilities.
+
+
+### Discrete random variables
+
+In NLP, the words may be treated as discrete random variables W . The number of words |V | in a corpus is finite, but may be huge (in
+the millions)
+A realization of W is a certain word w, e.g. house
+The words in a sentence occur not independently from each other, i.e. the words are correlated. Therefore, we have to consider sequences of words as multivariate random variables
+
+### Probability distributions in NLP
+
+Joint distribution of a sequence of words w1, w2, . . . , wn, n may be any number:
+The right hand side of the equation is a short form of the left hand side. Example: P(The,dog,is,barking).
+Special choices of n:
+* n = 1: Unigrams
+* n = 2: Bigrams
+Generally: n-grams
+Conditional distributions, e.g. the probability of the next word given a sequence of previous words:
+
+### Factorization of the joint distribution
+
+Sometimes called chain rule for conditional probabilities
+The joint distribution can be written as a product of conditional distributions
+
+### Markov assumptions
+
+The context of a word cannot be arbitrary long
+A fixed (or maximum) size for the context is usually assumed
+Under the Markov assumptions, the joint distribution can be factorized by conditional probabilities with a fixed context size.
+Example: Assume that P(wi|wi-1,...,w1) = P(wi|wi-1) (i.e., we only consider bigrams). Then
+
+### Bengio’s et al. neural network language model (NNLM)
+
+In 2003, Bengio et al. introduced the NNLM which uses the introduced factorization with the Markov property
+
+### More on random numbers and probabilities
+Discrete random variables also occur in other contexts than NLP. Examples:
+* Binary random variables (Bernoulli experiments) are a model for experiments with two possible outcomes (0 or 1), e.g. coin tossing.
+* Poisson random numbers are often for counts, e.g. the number of car accidents during a certain interval (month, year) in a city.
+Random numbers can also be continuous, e.g. Gaussian random numbers, i.e., X is Gaussian, if X ~ N($\mu$,sigma2)) where $\mu$ andsigma 2 are two parameters which have usually to be estimated from the data. The distribution of random numbers is often given in terms of a probability density f (x) which is positive and integrates to 1. For a Gaussian, the density is
+
+### Expectation and variance
+If g is a function of a random variable X with density function p(x), the expectation or expected value of g is the mean value or average over all possible values of X:
+
+If f is disrete, the integral is replaced by a sum.
+The variance of g is then
+
+### Theorem of Bayes
+
+The theorem of Bayes can be stated for probabilities and densities
+* For probabilities, it solves the following problem: if it is known that an
+event B has occured (e.g. that the thrown number on top of a dice is odd) than the probability of another event A (e.g. a 3 has been thrown) can be calculated. This is usually denoted as
+
+For densities: let p(x,y) the joint density of two random variables, p(x) the marginal and p(y|x) the conditional density. 
+
+## Train-/Dev-/Test-Splits I
+
+To train a machine learning model, several strategies are possible.
+One strategy is to split the whole available training data into two or three parts. 
+If the algorithm requires hyperparameter tuning, a split in three parts is necessary:
+The training set is used to generate the ML model (given that certain hyperparameters are fixed at some values), the development set is used to compare different hyperparameter values and to select (in best case) the optimal ones or at least those who give the best evaluation on the dev set.
+The test set is finally used to measure the performance of the ML model with the optimal hyperparameters.
+Another strategy is to use cross validation.
+
+## Loss function I
+A loss function L is a function into the positive real numbers (including 0).
+Let y the actual value and yˆ a prediction then the loss function is given by L = L(y,yˆ).
+Loss functions can be discrete or continuous
+For optimization purposes, continuous loss functions are preferable
+Supervised learning tasks try to minimize the expected loss ˆˆ
+ˆ
+Y = f (x) .
+The expected loss is then EL = E(x,y)(L(Y,f(x)).
+EL = E(x,y)(L(Y,Y)). Usually, the prediction Y is estimated as a prediction function f (x), depending on the features x,
+
+## Loss function II
+If one chooses a quadratic loss function L(Y , f (X )) = [Y - f (X )] , the expected loss (or prediction error) is
+
+Factorizing P(Y,X) = P(Y|X)P(X), this can be written as
+
+A pointwise minimization leads to
+
+This is called the regression function (conditional expectation)
+
+### Loss function III
+ˆ
+Discrete case: let C the observed class and C(X) the function which
+assigns each X a certain class C from C. Let the classes denoted as 1, 2, . . . , K . A possible loss function is the 0-1-loss. A wrong assignment is punished by 1:
+
+### Loss function IV
+
+This is the so-called Bayes-classifier which assigns the class which has the highest conditional probability.
+Note that the expected loss is estimated from test data using the test samples (empirical loss). Therefore the distributions are not necessary to do the calculation of the empirical loss. We simply calculate the average over all validation or test samples (which is a consistent estimate for the expected loss):
+
+whereYj =f(xj)isthepredictionofthejthsampleandm' isthe number of samples.
+The negative log-likelihood is often used as loss function (we will see an example later).
+
+### Performance measures (supervised learning) I
+
+While the loss functions are used for optimization purposes, performance measures are usually used to evaluate a machine learning model.
+Many supervised tasks are classification tasks, often with two classes (binary task), e.g. sentiment analysis (positive or negative sentiment of a text), but in principle a finite number of classes is possible. In this case, many measures have been proposed which are based on the confusion matrix. Example: consider a classifier for images showing either a donkey or a horse:
+
+### Performance measures (supervised learning) II
+case). Then we call the prediction of a donkey as donkey as true positive (TP), the prediction of a horse as a horse as true negative (TN), the prediction of a donkey as a horse as false negative (FN) and the prediction of a horse as a donkey as false positive (FP). All performance measures build on these four numbers:
+
+### Performance measures (supervised learning) III
+In multiclass problems, a generalization can be obtained by two approaches. One approach considers all correct predictions versus all wrong predictions (e.g. Micro F1 score). The second focuses on one class and pools all other classes together. Then, binary measures can be calculated for each class separately and then summarized into one measure (e.g. Macro F1 score).
+
+### Sigmoid function
+
+### Softmax function
+
+### Rectified linear unit (ReLu)
+
+# Lecture 3 Introduction to Machine Learning – Linear and Logistic Regression
+
+**Linear Regression**
+
+In linear regression, the prediction y^ of a label y is a linear function: 
+Note, that in this notation, the parameter vector w in Rn stands already for the estimated parameter vector.
+Weight wj decides if value of feature xj increases or decreases prediction yˆ.
+
+### Linear Regression: Mean Squared Error
+Mean squared error of training (or test) data set is the sum of squared differences between the predictions and labels of all m instances.
+
+### Learning: Improving on MSE
+
+* Gradient of a function f : Vector whose components are the n partial derivatives of f wrt to the parameters, here w.
+* View MSE as a function f (w) of w 
+* Minimum is where gradient is 0:
+
+Minimum is where gradient delta MSE = 0. w
+Why minimum and and not maximum or saddle point?
+* Because it is a quadratic function...
+* Check convexity for 1 dimensional function: Second derivative > 0.
+* Check for vector valued function: Hessian is positive-semidefinite.
+
+### Second Derivative Test
+Second derivative of Mean Squared Error for Linear model with only one featur
+
+Solving for w
+We now know that minimum is where gradient is 0.
+
+### Deriving the Normal Equation
+
+Practical Remarks
+T
+* one feature is the exact multiple of another
+* there are more features than training examples
+  * a Moore-Penrose pseudoinverse picks solution with smallest
+Euclidean norm.
+  * adding a regularization term makes the system of equations
+What if X
+
+This can happen if there are infinitely many solutions:
+
+X does not have an inverse?
+non-singular (uniquely solvable)
+
+In general: Avoid computing the matrix inverse when
+
+implementing least squares (slow/unstable)!
+There are usually special routines for solving linear least squares and rigde regression.
+
+### Second Derivative Test for Multi-Dimensional Case
+
+Second derivative test for multi-dimensional w in Rn
+Is Hessian positive-semidefinite? (zT Hz > 0 for z/= 0) equivalent Function is convex.
+Hessian: Matrix of second-order partial derivatives.
+
+### Linear Regression: Summary
+
+* Linear regression models simple linear relationships between X and y The Mean squared error is a quadratic function of the parameter vector w, and has a unique minimum.
+* Normal equations: Find the minimum by setting the gradient to zero and solving for w.
+* Linear algebra packages have special routines for solving least squares linear regression.
+
+### Maximum Likelihood Estimation
+
+Machine learning models are often more interpretable if they are stated in a probabilistic way.
+Performance measure: What is the probability of the training data given the model parameters? Works only well for discrete data! More general: use densities instead of probabilities
+Likelihood: Probability density of data as a function of model parameters. Generally, likelihood is a function proportional to the density.
+-> Maximum Likelihood Estimation
+Many models can be formulated in a probabilistic way!
+
+### Probability density of a data set
+
+Data points are assumed to be (stochastically) independent (and sometimes identically distributed) random variables (i.d. or i.i.d.)
+* Assumption made by many ML models.
+* Identically distributed: Examples come from same distribution.
+* Independent: Value of one example doesn’t influence other example.
+*  Probability density of the data set is the product of example
+probability densities.
+
+Maximum Likelihood Estimation
+Likelihood: Probability density of data viewed as function of parameters theta
+(Negative) Log-Likelihood (NLL):
+* Logarithm is monotonically increasing
+* Maximum of function stays the same
+* Easier to do arithmetic with (sums vs. products)
+* Optimization is often formulated as minimization -> take negative of function.
+Maximum likelihood estimator for theta:
+
+### Conditional Log-Likelihood
+Log-likelihood can be stated for supervised and unsupervised tasks
+
+### Linear Regression as Maximum Likelihood
+Instead of predicting one value yˆ for an input x, model probability distribution p(y|x).
+For the same value of x, different values of y may occur (with different probability).
+
+### Gaussian Distribution
+
+Linear Regression as Maximum Likelihood
+
+* Taking the log makes it a quadratic function!
+Conditional negative log-likelihood:
+
+Minimizing NLL under these assumptions is equivalent to minimizing MSE!
+The result of the minimization of the NLL is the MLE theta hat.
+
+### A Caveat: Maximum Likelihood is not Bayesian
+
+MLE is simple: Identify distribution and parameters, then maximize! MLE accounts for (some) uncertainty: Instead of predicting a single
+value yˆ, treat y as a random variable.
+However, what about the uncertainty about our parameters theta?
+Shouldn’t theta be treated as a random variable, too? ˆ
+(Instead of a point estimate theta?)
+
+Uncertainty about theta influenced by:
+* Our assumptions what reasonable values for theta look like.
+* The amount of training data.
+* The properties (variance ...) of the training data.
+Bayesian inference is all about modelling randomness of theta in a sound way.
+Why is it called Bayesian?
+* The Bayesian approach is theoretically more appealing than working with point estimates.
+* In practical terms: Sometimes going the Bayesian way pays off, sometimes it doesn’t.
+
+### Maximum Likelihood: Summary
+
+Many machine learning problems can be stated in a probabilistic way.
+Mean squared error linear regression can be stated as a probabilistic model that allows for Gaussian random noise around the predicted value y^.
+A straightforward optimization is to maximize the likelihood of the training data.
+Maximum likelihood is not Bayesian, and may give undesirable results (e.g. if there is only little training data).
+In practice, MLE and point estimates are often used to solve machine learning problems.
+
+### Linear regression and mean squared error of prediction
+
+The linear model is given by (Y is a random variable, y its realization)
+
+The theoretical quantity, which is estimated by the introduced MSE, is the so-called MSEP (mean squared error of prediction), which is also an expectation,
+
+From Regression to Classification
+So far, linear regression:
+
+* A simple linear model.
+* Probabilistic interpretation.
+* Find optimal parameters using Maximum Likelihood Estimation.
+
+Can we do something similar for classification?
+-> Logistic Regression (. . . it’s not actually used for regression . . . )
+
+## Logistic Regression
+
+Binary logistic model:
+Estimate the probability of a binary response y $\in$ {theta, 1} based on features x.
+Logistic Regression is a Generalized Linear Model:
+Linear model is related to the response variable via a link function.
+
+Classification: Outcome (per example) 0 or 1
+Logistic Regression: Linear function + logistic sigmoid
+
+Binary Logistic Regression
+Probability of different outcomes (for one example): Probability of positive outcome:
+
+### Probability of a Training Example
+(i) (i) given features x
+Probability for actual label y
+Can be written for both labels (0 and 1) without case distinction Label exponentiation trick: use x0 = 1
+
+Binary Logistic Regression
+Conditional Negative Log-Likelihood (NLL):
+
+#TODO
+
+**Logistic regression:** Logistic sigmoid function applied to a weighted linear combination of feature values.
+To be interpreted as the probability that the label for a specific example equals 1.
+Applying the model on test data: Predict y(i) = 1 if 
+
+(i) p(Y=1|x ;theta)>0.5
+
+No closed form solution for maximizing NLL, iterative methods necessary.
 
 # Lecture 4 Introduction to Machine Learning - Optimization, Deep Feed Forward Networks, Backproagation, Regularization
 
@@ -232,7 +730,7 @@ Locality: Meaningful objects form coherent areas
 few positions (depending on filter size) Hierarchy of features from simple to complex:
 * In computer vision, we often apply many convolutional layers one after another
 * With every layer, the information travels further, and the feature vectors become more complex
-* Pixels → edges → shapes → small objects → bigger objects
+* Pixels * edges * shapes * small objects * bigger objects
 
 # **Pooling layers**
 
@@ -263,7 +761,6 @@ Pooling is less frequently used in NLP.
 If the task is a word-level task (i.e., we need one output vector per word), we can simply use the output of the final convolutional layer – no pooling needed.
 If the task is some sentence-level task (i.e., we need a single vector to represent the entire sentence), we usually do a “global” pooling step over the entire sentence after the last convolutional layer:
 
-
 # Lecture 7 RNN 
 
 Assumption: Text is written sequentially, so our model should read it sequentially
@@ -280,7 +777,8 @@ $h(j)=f(x(j),h(j-1); \theta)$
 
 #TODO
 
-Backpropagation through time
+### Backpropagation through time
+
 RNNs are trained via “backpropagation through time”
 To understand how this works, imagine the RNN as a Feed-Forward Net (FFN), whose depth is equal to the sentence length
 For now, let’s pretend that every time step (every layer) has its own
@@ -352,6 +850,46 @@ Step 2: Turn e into probability distribution with the softmax function
 Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
 
 #todo
+
+### Attention in Bahdanau et al., 2015
+
+Source sentence: (x1 . . . xTx ), encoded as hidden states (h1 . . . hTx ) by encoder RNN
+Decoder is defined as:
+
+Exercise: Recognize the architecture (hint: they don’t use boldface)
+* This is a GRU
+* si are the states (which we called h(i ) )
+* Eyi-1 is the embedding of the word that was/should have been
+predicted at the previous time step (oracle or decoded input)
+* W* and U* are parameter matrices (which we called W(*) and V(*)),
+and they drop the bias
+* C* seem to be additional parameter matrices ... but where does the
+vector ci come from?
+
+Each equation corresponds to one step from our attention recipe. Exercise: Figure out which equation is which step.
+* The first equation is step 3. It defines the output vector ci (o in our recipe) as an attention-weighted sum over encoder states. So the encoder states hj are our value vectors (vj in our recipe).
+* The second equation is step 2.
+* The third equation is step 1, which defines the raw scores.
+* si-1 (previous decoder state) is the query vector (q in our recipe)
+* The encoder states hj are also our key vectors (so kj = vj in this case)
+
+### Scoring function is a Feed-Forward Net:
+
+#TODO
+
+### What does attention learn?
+
+#TODO
+
+### Effect on translation quality for long sentences
+
+* RNNsearch-30 and RNNsearch-50 are the attention models 
+* RNNenc-30 and RNNenc-50 are the baseline models without attention 
+* 30 and 50 are the state dimensionalities
+
+* Important to note: The Bahdanau model is still an RNN, just with attention on top.
+* Next week, we get rid of the RNN completely and introduce the attention-only Transformer architecture.
+
 
 # Lecutre 8 Self-Attention and the Transformers 
 
@@ -454,7 +992,7 @@ Step 3: Weighted sum
 
 #TODO
 
-GPUs like matrix multiplications → usually a lot faster than
+GPUs like matrix multiplications * usually a lot faster than
 RNN!
 But: The memory requirements of E and A are O(Jy Jx )
 A length up to about 500 is usually ok on a medium-sized GPU (and most sentences are shorter than that anyway).
@@ -518,32 +1056,65 @@ In the Transformer, layer normalization is applied position-wise, i.e., every oj
 ## Position encodings
 
 Can self-attention model word order?
-Our model consists of a self-attention layer on top of a simple word embedding lookup layer. (For simplicity, we only consider one head, but this applies to multi-head attention as well.)
-Example: “john loves mary” vs. “mary loves john”
+Does it get same vector representation.
+Hard to model relationship stuff and object subject differentation.
 
+Since addition is commutative and the permutation is bijective, it is sufficent to show that:
+#TODO
+
+Lets show equality for v vectors.
+Since we know word embeddings are equal and we apply same parameter matrix, it follows that the parameter vectors are also equal.
+
+Step 2: Show equality also holds for alphas.
+Since the sum in the denominator is commuatitve and permutation is bijective it is suffcient to show that equality holds for the underlying e scores.
+Using the definition of e, we know all word embeddings are equal. Again we are applying the same parameter matrixes. 
+The same equality holds for query and key vectors.
+Since that is true, we also know the dotproduct is equal.
+
+Our model consists of a self-attention layer on top of a simple word embedding lookup layer.
+(For simplicity, we only consider one head, but this applies to multi-head attention as well.)
+Example: “john loves mary” vs. “mary loves john”
 
 In other words: The representation of mary is identical to that of mary, and the representation of john is identical to that of john
 
-Question: Can the other layers in the Transformer architecture (feed-forward net, layer normalization) help with the problem?
+**Question:** Can the other layers in the Transformer architecture (feed-forward net, layer normalization) help with the problem?
 
   * No, because they are apply the same function to all positions. 
-* Question: Would it help to apply more self-attention layers?
+
+**Question:** Would it help to apply more self-attention layers?
+
   * No. Since the representations of identical words are still identical in O, the next self-attention layer will have the same problem.
-* So... does that mean the Transformer is unusable?
+
+**Question:** So... does that mean the Transformer is unusable?
+
 * Luckily not. We just need to ensure that input embeddings of identical words at different positions are not identical.
+
+### Position embeddings 
+
+* Add to every input wird enbedding a position embedding 
+* Option 1: Trainable parameter P (dim Jmax times d) like Devlin 2018. 
+* Obvious disadvantage becuase cannot deal with sentences longer than Jmax
+
+* Option 2: Sinusiodal position embeddings (deterministic)
+
+Remember: Sinusiodal position embeddings make pretty big models. Increase of dimensionality seen via depth.
+The first dimensionalities have short wave length and allow to differentiate between immediate neighbors. 
+The slower ones, deeper in the model, and give model more of an idea whether word at beginning or end. 
 
 ## Lecture 8b)  Hyperparameter Optimization 
 
-Things that may affect the performance of a model on a task, without being a trainable parameter in theta
+## Hyperparameters
+
+Things that may affect the performance of a model on a task, without being a trainable parameter in theta.
 
 * input (word embedding) 
 * size hidden state size (RNN) 
-* number of filters (CNN) 
+* number of filters (CNN)
 * filter size (CNN)
 * number of heads (Transformer)
 * hidden size of queries/keys/values (Transformer)
 * number of layers/blocks
-* choice of nonlinearity (ReLU vs. tanh vs. ...)
+* choice of non-linearity (ReLU vs. tanh vs. ...)
 * batch size
 * factor for L1, L2 regularization
 * dropout probability
@@ -556,7 +1127,7 @@ Things that may affect the performance of a model on a task, without being a tra
 * The process of choosing the best hyperparameters for a given architecture and task
 * Different from training your regular parameters, because hyperparameters are not optimized by gradient descent
 
-### Train / Validation / Test sets
+## Train / Validation / Test sets
 
 Needed: separate train/validation*/test sets 
 
@@ -573,35 +1144,35 @@ For every hyperparameter configuration:
 
 Keep the model that had the best performance on the validation set Evaluate that model on the test set
 
-## CV 
+## Cross-Validation 
 
 Useful when there is very little data, so that you cannot afford separate train and validation sets.
 Split training set into N subsets (“folds”) For every hyperparameter configuration:
-* Foreveryfold 1 smaller or equal n smaller or equal N:
-* Fold n is your validation set, the other folds are your training set
-* Create, train and evaluate the model
-* Average the validation performance over all folds
-Keep the configuration that had the best average validation
-performance
-Train a model with that configuration on the full training set (all folds together)
-Measure the model’s performance on the test set
 
-### The importance of the test set 
+For every fold 1 smaller or equal n smaller or equal N:
+
+    * Fold n is your validation set, the other folds are your training set
+    * Create, train and evaluate the model
+* Average the validation performance over all folds
+* Keep the configuration that had the best average validation performance
+* Train a model with that configuration on the full training set (all folds together)
+* Measure the model’s performance on the test set
+
+## The importance of the test set 
 
 * Hyperparameter optimization means overfitting to the validation set 
 * You should never do hyperparameter optimization on the test set
 * The test set should only be used once, to evaluate your final model.
 * Otherwise, your test set is “spoiled”.
 
-
-### A hyperparameter configuration
+## A hyperparameter configuration
 
 A hyperparameter configuration is a specific choice of hyperparameters.
 Every hyperparameter has a range, or a set of permissible values.
 
 ### Defining hyperparameter ranges
 
-Usually, the range will be informed by your domain expertise:
+Usually, the range will be informed by your **domain expertise:**
 
 * Lots of data -> low risk of overfitting -> try big hidden sizes / more layers...
 * Little data -> high risk of overfitting -> try low hidden sizes / fewer layers ...
@@ -618,18 +1189,19 @@ For open-ended hyperparameters, use an (approximate) log scale, e.g.,
 
 Categorical hyperparameters (e.g., optimizer or nonlinearity) can be treated as a finite set
 
-How to search
-Brute Force?
+## How to search
 
-* Pro: Exhaustive
-* Con: Search space grows exponentially.
+* Brute Force?
+  * Pro: Exhaustive
+  * Con: Search space grows exponentially.
 
-Intuition: Some hyperparameters have a big effect, others have a small effect. A configuration that gets the first group right will be almost as good as the optimal configuration.
+Intuition: Some hyperparameters have a big effect, others have a small effect.
+A configuration that gets the first group right will be almost as good as the optimal configuration.
 
 Uniform sampling?
 
-* Pro: Easy to implement, good results in practice
-* Con: Will waste resources on configurations that have little chance of success (e.g., if we have previously found that all configurations with a hidden size of 20 produce bad results, we should stop sampling that particular value)
+* Pro: **Easy** to implement, good results in practice
+* Con: **Will waste resources** on configurations that have little chance of success (e.g., if we have previously found that all configurations with a hidden size of 20 produce bad results, we should stop sampling that particular value)
 
 ### Shifting window search (credit to Ben Roth)
 
@@ -646,15 +1218,14 @@ Not applicable to hyperparameters whose values are unordered sets (i.e., categor
 
 Start with a random set of configurations (population) For N iterations:
 
-* Delete the worst-performing configurations (survival of the fittest)
-* Randomly combine best-performing hyperparameter configurations to produce “children” (crossover).
+* Delete the **worst-performing configurations** (survival of the fittest)
+* Randomly combine **best-performing hyperparameter** configurations to produce “children” (crossover).
 * Inject random changes to explore new possibilities (mutations).
 
 ### How to search 
 
 * For reproducibility, you should always provide details about your method of hyperparameter search
 * That includes how many iterations you did, and any search-specific parameters (e.g., mutation probability, ...)
-
 
 # Lecture 9 Transfer Learning 
 
@@ -665,12 +1236,14 @@ Wikipedia says:
 
 **How it works with word2vec**
 
-Train word2vec on some ”fake task” (DBOW or Skip-gram) Extract the stored knowledge (a.k.a. embedding)
-or: Directly download embeddings from the web
-Perform a different (supervised) task using the embeddings
+* Train word2vec on some ”fake task” (DBOW or Skip-gram) 
+* Extract the stored knowledge (a.k.a. embedding) or: Directly download embeddings from the web
+* Perform a different (supervised) task using the embeddings
 
-Challenges:
+**Challenges:**
+
 If no embedding for a word exists, it cannot be represented.
+
 Workaround:
 
 * Train subword (character n-gram) embeddings
@@ -678,7 +1251,7 @@ Workaround:
 
 This is already a special case of Tokenization
 
-Tokenization examples:
+**Tokenization examples:**
 
 * Whitespace tokenization 
 * N-grams
@@ -690,7 +1263,6 @@ Tokenization examples:
 Difficulties:
 
 * When using embeddings (or other models/methods) for transferring knowledge, one has to stick to this method’s tokenization scheme.
-
 * Using words as tokens leads to vocabulary sizes of easily > 100k, which is undesirable.
 * Characters as tokens lead to a very small vocabulary size but aggravate capturing meaning.
 * Using (sets of) n-grams is kind of heuristic.
@@ -701,27 +1273,31 @@ Smart alternatives:
 * WordPiece
 * SentencePiece
 
-### BytePair encoding (BPE)
+## BytePair encoding (BPE)
+
 Data compression algorithm Gage (1994)
 
 Considering data on a byte-level Looking at pairs of bytes:
 
-* 1 Count the occurrences of all byte pairs
-* 2 Find the most frequent byte pair
-* 3 Replace it with an unused byte
+1. Count the occurrences of all byte pairs
+2. Find the most frequent byte pair
+3. Replace it with an unused byte
 
 Repeat this process until no further compression is possible
-**Open-vocabulary neural machine translation Sennrich et al. (2016)**
-Translation as an open-vocabulary problem Word-level NMT models:
 
+**Open-vocabulary neural machine translation Sennrich et al. (2016)**
+
+* Translation as an open-vocabulary problem 
+* Word-level NMT models:
   * Handling out-of-vocabulary word by using back-off dictionaries
   * Unable to translate or generate previously unseen words
-
 * Subword-level models alleviate this problem
 
 Adapt BPE for word segmentation Sennrich et al. (2016)
-Goal: Represent an open vocabulary by a vocabulary of fixed size → Use variable-length character sequences
-Looking at pairs of characters:
+Goal: Represent an open vocabulary by a vocabulary of fixed size 
+    * Use variable-length character sequences
+
+Looking at pairs of characters:(to get vocab size)
 
 1. Initialize the the vocabulary with all characters plus end-of-word token
 2. Count occurrences and find the most frequent character pair,
@@ -744,16 +1320,230 @@ Specific Problems:
 
 WordPieceModel: Data-dependent + do not produce OOVs
 
-1 Initialize the the vocabulary with basic Unicode characters (22k for
+1. Initialize the the vocabulary with basic Unicode characters (22k for
 Japanese, 11k for Korean)
 #TODO Spaces are indicated by an underscore attached before (of after) the
 respective basic unit or word (increases initial |V | by up to factor 4)
-2 Build a language model using this vocabulary
-3 Merge word units that increase the likelihood on the training data the
+2. Build a language model using this vocabulary
+3. Merge word units that increase the likelihood on the training data the
 most, when added to the model
+
 Two possible stopping criteria:
 Vocabulary size or incremental increase of the likelihood
 
+**Use for neural machine translation**
+
+* Adoptions:
+
+* Application to Western languages leads to a lower number of basic units (~500)
+* Add space markers (underscores) only at the beginning of words 
+* Finally vocabulary sizes between 8k and 32k yield a good balance between accuracy and fast decoding speed
+
+**Independent vs. join endocdings for source and target language** 
+
+* Sennrich et al. (2016) report better results for joint BPE
+* Wu et al. (2016) use shared WordPieceModel to guarantee identical segmentation in source & target language in order to facilitate copying rare entity names or numbers
+
+## SentencePiece Kudo et al. (2018b) 
+
+No need for Pre-Tokenization
+BPE & WordPiece require a sequence of words as inputs
+
+* Some sort of (whitespace) tokenization has to be performed before their application
+
+SentencePiece (as the name already reveals) doesn’t need that * Can be applied to ”raw” sentences
+
+* Consists of Normalizer, Trainer, Encoder & Decoder
+* Under the hood, two different algorithms are implemented
+* byte-pair encoding Sennrich et al. (2016)
+* unigram language model Kudo et al. (2018a)
+
+No language-specific pre-processing
+*  Basically a nice, end-to-end usable system/pipeline
+
+### Back to Transfer Learning 
+
+Embedding Idea + more complex architectures:
+Naive approach:
+Standard embeddings (like word2vec) are ”context-free”
+Better:
+* More complex networks, where the embeddings are trainable parameters of the model
+* Model learns context sensitive embeddings
+* We already encountered this in the Transformer
+More complex networks:
+* Whole network just to learn the embeddings, or
+* Additional embedding-layer as the lowest layer
+
+ Contextuality
+1st Generation of neural embeddings are ”context-free”:
+Breakthrough paper by Mikolov et al, 2013 (Word2Vec) Followed by Pennington et al, 2014 (GloVe)
+Extension of Word2Vec by Bojanowski et al, 2016 (FastText)
+Why ”Context-free”?
+Models learn one single embedding for each word Why could this possibly be problematic?
+* ”The default setting of the function is xyz.”
+* ”The probability of default is rather high.”
+Would be nice to have different embeddings for these two occurrences
+
+Questions/Problems:
+Where in this (deep) model do we achieve contextuality? (For sure not in the lowest layer!)
+* Not straightforward to extract them
+The deeper the network ..
+* .. the more expensive to train
+* .. the more data we need
+* You cannot just train them at home
+
+TRANSFER LEARNING
+Train such an architecture on ..
+* .. a fairly general task
+* .. which does not require any labels (”self-supervised”)
+* .. using large amounts of data
+Do not extract static embeddings, but use the whole pre-trained architecture
+Replace the final layer used for the general task by a different layer for a specific task at hand
+
+Taxonomy of transfer learning
+
+Transductive Transfer learning
+Domain adaptation:
+* ”Transfer knowledge learned from performing task A on labeled data from domain X to performing task A in domain Y.”
+Cross-lingual learning:
+* ”Transfer knowledge learned from performing task A on labeled data from language X to performing task A in language Y.”
+Important: No labeled data in target domain/language Y.
+
+Inductive Transfer learning
+Multi-task learning:
+* ”Transfer knowledge learned from performing task A on data from domain X to performing multiple (simultaneous) tasks B, C, D, .. in domain Y.”
+Sequential transfer learning:
+* ”Transfer knowledge learned from performing task A on data from domain X to performing multiple (sequential) tasks B, C, D, .. in domain Y.”
+Important: Labeled data only for task(s) from target domain Y.
+
+Feature-based transfer learning
+Again: Word Embeddings
+The stored knowledge from the pre-trained model is extracted as is and is not further adapted to the actual domain/task of interest. Difficulties:
+* Source & target domain/task might be pretty different
+* No representations for domain-/task-specific words
+* No contextualization
+Enhancement: Embeddings from Language Models (ELMo)
+
+Bidirectional language model (LM) 
+Combines a forward LM
+and a backward LM
+to arrive at the following loglikelihood:
+
+Character-based (context-independent) token representations
+
+
+Two-layer biLSTM as main architecture:
+
+* Two context-dependent token representations per layer, i.e.
+* Four context-dependent token representations in total:
+* Five representations per token in total:
+
+## ELMO
+
+Including ELMo in downstream tasks:
+Calculate task-specific weights of all five representations:
+
+Trainable parameters during the adaption:
+
+* s_j task are trainable (softmax-normalized) weights 
+*  gamma task is a trainable scaling parameter
+
+**Advantages over context free-embeddings:**
+
+Task-specific model has access to multiple representations of each token
+Model learns to which degree to use the different representations depending on the task at hand
+
+### Fine-tuning approach
+
+**Shortcomings of ELMo:**
+Pre-trained on a general domain corpus, embeddings are not adapted to the domain/task at hand
+Sequential nature of LSTMs:
+
+* Not fully parallelizable (compared to Transformers)
+* Fail to capture long-range dependency during contextualization
+
+Alleviations/Alternatives:
+ULMFiT Howard and Ruder, 2018 is a uni-directional LSTM which is fine-tuned as a whole model on data from the target domain/task.
+GPT Radford et al., 2018 is a Transformer (decoder) which is fine-tuned as a whole model on data from the target domain/task.
+
+### ULMFiT – Architectural Details
+
+* AWD-LSTMs Merity et al., 2017 as backbone of the architecture
+  * DropConnect Wan et al., 2013
+  * Averaged stochastic gradient descent (ASGD) for optimiziation
+
+Embedding layer + three LSTM layers + Softmax Layer
+
+**LM fine-tuning:**
+
+  * Discriminative fine-tuning Classifier fine-tuning:
+  * Concat Pooling
+  * Gradual unfreezing
+
+#### GPT – Architectural Details
+
+Transformer decoder as backbone of the architecture
+* 12-layer-decoder with masked attention heads
+* 40k BPE vocabulary
+* Learned positional embeddings (compared to sinusoidal versions)
+Fine-tuning:
+* Linear output layer with softmax activation on top
+* Auxiliary language modeling objective during fine-tuning
+  * Improves generalization
+  * Accelerates convegence
+* Task-specific input transformations (see previous slide)
+
+#### GPT – SOTA results
+
+Performance on different benchmarks:
+
+Pre-training objectives
+
+**Self-Supervision:**
+
+Special case of unsupervised learning Labels are generated from the data itself
+
+**Self-supervised objectives:**
+
+Skip-gram objective (cf. word2vec Mikolov et al. (2013a) ) Language modeling objective (cf. Bengio et al. (2003) )
+Masked language modeling (MLM) objective (cf. chapter 10)
+  * Replace words by a [MASK] token and train the model to predict
+Permutation language modeling (PLM) objective (cf. chapter 11) 
+    * Autoregressive objective of XLNet
+Replaced token detection objective (cf. chapter 11)
+  * Requires two models: One performing MLM & the second model to discriminate between actual and the predicted tokens
+
+### Pre-training resources
+
+Commonly used (large-scale) data sets for pre-training
+English Wikipedia 1B Word Benchmark
+  BooksCorpus Wikitext-103 CommonCrawl
+Chelba et al. (2013) Zhu et al. (2015)
+Merity et al. (2016) https://commoncrawl.org/
+  Non-exhaustive list; tbc in the following chapters
+
+### Transfer Learning in Computer Vision
+
+ ImageNet:
+Deng et al., 2009
+Large-scale data set (~50 million labeled images) Hierarchical data set structured in synsets
+”Diverse coverage of the image world.” (Deng et al., 2009)
+How it changed learning:
+Quasi-standard to use a model pre-trained on ImageNet Achieved SOTA results in various computer vision tasks Enable the use of large models to small (labeled) data sets
+
+## Summary & Outlook
+
+Pros:
+New and deep architectures enable better representation learning
+Leverage favorable properties of language to create self-supervised tasks
+Use ubiquitous large amounts of unlabeled data available on the web
+Cons:
+Pre-Training extremely costly
+Models will have up to over billions parameters Only works well for high-resource languages
+
+Further reading
+* NLP’s ImageNet moment has arrived
+* Sebastian Ruder’s PhD thesis:
 
 # Lecture 10 BERT 
 
@@ -797,7 +1587,7 @@ BERT (and its successors) rely on the Masked Language Modelling objective during
 
 **Causality is an issue!**
 
-Remember: Input and target sequences are the same → We modify the input to create a meaningful task
+Remember: Input and target sequences are the same * We modify the input to create a meaningful task
 A sequence is used to predict itself again
 Bidirectionality at a lower layer would allow a word to see itself at later hidden layers
 
@@ -808,7 +1598,7 @@ Bidirectionality at a lower layer would allow a word to see itself at later hidd
 
 Devlin et al. (2018)
 ELMo uses to separate unidirectional models to achieve bidirectionality
-→ Only ”shallow” bidirectionality
+* Only ”shallow” bidirectionality
 GPT is not bidirectional, thus no issues concerning causality BERT combines the best of both worlds:
 Self -Attention + (Deep) Bidirectionality
 
@@ -833,11 +1623,11 @@ leave 10% unchanged
 Predict 15% of the tokens of which only 80% have been replaced by [MASK]
 
 * 80% of the selected tokens:
-The quick brown fox → The quick brown [MASK]
+The quick brown fox * The quick brown [MASK]
 * 10% of the selected tokens:
-The quick brown fox → The quick brown went
+The quick brown fox * The quick brown went
 * 10% of the selected tokens:
-The quick brown fox → The quick brown fox
+The quick brown fox * The quick brown fox
 
 **Next Sentence Prediction (NSP)**
 
@@ -854,10 +1644,10 @@ Full Input:
 ### Pre-Training BERT
 
 **Ingredients:**
-Massive lexical resources (BooksCorpus + Eng. Wikipedia) → 13 GB in total
+Massive lexical resources (BooksCorpus + Eng. Wikipedia) * 13 GB in total
 Train for approximately* 40 epochs
 4 (16) Cloud TPUs for 4 days for the BASE (LARGE) variant
-12 (24) Transformer encoder blocks with an embedding size of E = 768 (1024) and a hidden layer size H = E, H/64 = 12 (16) attention heads are used and the feed-forward size is set to 4H → 110M (340M) model parameters in total for BERTBase (BERTLarge )
+12 (24) Transformer encoder blocks with an embedding size of E = 768 (1024) and a hidden layer size H = E, H/64 = 12 (16) attention heads are used and the feed-forward size is set to 4H * 110M (340M) model parameters in total for BERTBase (BERTLarge )
 
 **Loss function:**LossBERT = LossMLM + LossNSP
 
@@ -871,7 +1661,7 @@ Source: Vaswani et al. (2017)
 BERT can only consume sequences of up to 512 tokens Two sentences for NSP are sampled such that
 lengthsentenceA + lengthsentenceB smaller or equal 512
 Reason: Computational complexity of Transformer scales quadratically with the sequence length
-→ Longer sequences are disproportionally expensive
+* Longer sequences are disproportionally expensive
 
 ### Fine-Tuning BERT
 
@@ -922,7 +1712,7 @@ Overview on many different papers: https://github.com/tomohideshibata/BERT-relat
 Authors claim that BERT is seriously undertrained
 Change of the MASKing strategy
 
-* BERT masks the sequences once before pre-training → RoBERTa uses dynamic MASKing
+* BERT masks the sequences once before pre-training * RoBERTa uses dynamic MASKing
   * RoBERTa sees the same sequence MASKed differently
 
 * RoBERTa does not use the additional NSP objective during pre-training 160 GB of pre-training resources instead of 13 GB 
@@ -1020,13 +1810,13 @@ Allows for bidirectionality while keeping AR objective Consists of two ”stream
 * Query-stream attention
 Manipulating the factorization order
 Consider permutations z of the index sequence [1, 2, . . . , T ]
-→ Used to permute the factorization order, not the sequence order. Original sequence order is retained by using positional encodings PLM objective (with ZT as set of all possible permutations):
+* Used to permute the factorization order, not the sequence order. Original sequence order is retained by using positional encodings PLM objective (with ZT as set of all possible permutations):
 
 ## Content- vs. Query-stream
 
 **Content-stream**
 
-”Normal” Self-Attention (despite with special attention masks) → Attentions masks depend on the factorization order
+”Normal” Self-Attention (despite with special attention masks) * Attentions masks depend on the factorization order
 Info about the position in the sequence is lost, see
 Sets of queries (Q), keys (K) and values (V) from content stream* Yields a content embedding denoted as $h \theta(xz smaller or equal t)$
 
