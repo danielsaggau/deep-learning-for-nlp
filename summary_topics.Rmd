@@ -14,7 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Why Machine Learning is Useful Today
 
 Humans get lost in the lake of ever-growing volumes and varieties of available data Big Data , thus automatic methods for analyzing the data or making decisions based on the data are necessary.
-Unstructured data (e.g. text-heavy data) Unstructured Data often needs a lot of preprocessing before it can be further used. 
+Unstructured data (e.g. text-heavy data) 
+Unstructured Data often needs a lot of preprocessing before it can be further used. 
 For humans this is usually an awkward task and is better delegated to a ”machine”. 
 Scientific laws (e.g. laws of classical mechanics) can most often not be applied to the data at hand, we can only learn something (usually called a model) from the observed example data.
 Accurate model building can be a time-consuming and frustrating process, especially for complex data and has to be done again and again for different data. 
@@ -22,8 +23,11 @@ Machine learning promises to reduce the use of human resources, also leading to 
 
 ## Disadvantages of Machine Learning
 
-The resulting models are often black boxes. That makes it often difficult to evaluate the reliability and robustness of a model. Since there is a zoo of available ML algorithms, model agnostic methods are needed.
-It may be difficult to explain and interpret a model. For example, a credit scoring model should be transparent why a certain customer is getting a credit but another not.
+The resulting models are often black boxes.
+That makes it often difficult to evaluate the reliability and robustness of a model. 
+Since there is a zoo of available ML algorithms, model agnostic methods are needed.
+It may be difficult to explain and interpret a model.
+For example, a credit scoring model should be transparent why a certain customer is getting a credit but another not.
 The model can only learn from the data which is available to train it. If the training data does not reflect or cover the target population well or contains stereotypes (e.g. gender stereotypes in text data), its application may lead to so-called biased results.
 The computational resources needed are often very high (e.g. GPUs are still expensive).
 Depending on the complexity of the problem, a high number of examples (statistically: a high sample size) is needed to build accurate models.
@@ -50,13 +54,9 @@ Supervised learning:
 * Predict specific additional properties from X
 * E.g., sentiment classification: Predict sentiment (1–5) of amazon
 reviews
-* In the training data, additional labels (the outputs) are available for
-each example, i.e. an additional label vector y in Rm together with the
-input X can be used for training the model.
-* The task is then to predict the labels of new data, where only the
-features X are known.
-* The performance of this prediction is measured by a loss function and
-the task is usually solved by an optimization which minimizes the loss.
+* In the training data, additional labels (the outputs) are available for each example, i.e. an additional label vector y in Rm together with the input X can be used for training the model.
+* The task is then to predict the labels of new data, where only the features X are known.
+* The performance of this prediction is measured by a loss function and the task is usually solved by an optimization which minimizes the loss.
 
 ## Supervised and Unsupervised Learning: data generation process (DGP)
 
@@ -67,11 +67,7 @@ Supervised learning in an unsupervised way (Bayes theorem):
 Note: if y is continuous, the sum (in the denominator) must replaced by an integral.
 
 Machine Learning Tasks
-Types of Tasks: Classification
-Regression
-Structured Prediction Anomaly Detection Synthesis and sampling Imputation of missing values Denoising
-Clustering
-Reinforcement learning
+Types of Tasks: Classification, Regression, Structured Prediction, Anomaly Detection .Synthesis and sampling Imputation of missing values, Denoising, Clustering, Reinforcement learning
 ...
 
 ### Task: Classification
@@ -86,8 +82,8 @@ Predict a numerical value given some input.
 
 ### Task: Structured Prediction
 
-Predict a multi-valued output with special inter-dependencies and constraints.
-Typical examples:
+Predict a multi-valued output with special inter-dependencies and constraints. Typical examples:
+
 * Part-of-speech tagging
 * Syntactic parsing
 * Machine Translation
@@ -95,11 +91,13 @@ Typical examples:
 Often involves search and problem-specific algorithms.
 
 ### Task: Reinforcement Learning
+
 In reinforcement learning, the model (also called agent) needs to select a series of actions, but only observes the outcome (reward) at the end.
 The goal is to predict actions that will maximize the outcome.
 EMNLP 2017: The computer negotiates with humans in natural language in order to maximize its points in a game
 
 ### Task: Anomaly Detection
+
 Detect atypical items or events.
 Common approach: Estimate density and identify items that have low probability.
 
@@ -147,7 +145,7 @@ Squared error (regression): (y - f (x ))2 Hinge loss (classification):
 * (assume that y in {-1, 1})
 ...
 These loss functions are differentiable. 
-So we can use them for gradient descent (more on that later
+So we can use them for gradient descent (more on that later)
 
 ### Deep Learning
 
@@ -172,9 +170,9 @@ Many successes:
 
 **Machine Learning**
 
-Deep Learning builds on general Machine Learning concepts
+Deep Learning builds on general Machine Learning concepts.
 L is called loss function or cost function (we will discuss it further in the next chapter).
-Fitting data vs. generalizing from data
+Fitting data vs. generalizing from data.
 
 Summary
 
@@ -354,7 +352,9 @@ Mean squared error of training (or test) data set is the sum of squared differen
 * Minimum is where gradient is 0:
 
 Minimum is where gradient delta MSE = 0. w
+
 Why minimum and and not maximum or saddle point?
+
 * Because it is a quadratic function...
 * Check convexity for 1 dimensional function: Second derivative > 0.
 * Check for vector valued function: Hessian is positive-semidefinite.
@@ -486,8 +486,7 @@ Can we do something similar for classification?
 
 Binary logistic model:
 Estimate the probability of a binary response y $\in$ {theta, 1} based on features x.
-Logistic Regression is a Generalized Linear Model:
-Linear model is related to the response variable via a link function.
+Logistic Regression is a Generalized Linear Model: Linear model is related to the response variable via a link function.
 
 Classification: Outcome (per example) 0 or 1
 Logistic Regression: Linear function + logistic sigmoid
@@ -568,8 +567,7 @@ Backpropagation: Compute gradient of cost w.r.t. parameters using chain rule.
 # Regularization 
 
 Overfitting vs. underfitting
-Regularization: Any modification to a learning algorithm for reducing
-its generalization error but not its training error
+Regularization: Any modification to a learning algorithm for reducing its generalization error but not its training error
 Solution space is still the same
 
 Prefer models with smaller feature weights.
@@ -611,12 +609,12 @@ So let’s pretrain embeddings on the unlabeled data first.
 
 distributional hypothesis: “a word is characterized by the company it keeps”’
 
-* Skigram 
+## Skigram 
 
 The skipgram task is to maximize the likelihood of the context words, given their center word:
 Expressed as a negative log likelihood loss:
 
-* CBOW Task 
+## CBOW Task 
 
 The continuous bag of words (CBOW) task is to maximize the likelihood of the center words, given their context words:
 Expressed as a negative log likelihood loss:
@@ -628,7 +626,7 @@ Expressed as a negative log likelihood loss:
 Instead of predicting a probability distribution over whole vocabulary,
 predict binary probabilities for a small number of word pairs. This is not a language model anymore...... but since we only care about the word vectors, and not the skip gram/CBOW predictions, that’s not really a problem.
 
-* FastText
+### FastText
 
 Even if we train Word2Vec on a very large corpus, we will still encounter unknown words at test time
 
@@ -641,7 +639,7 @@ Design choice: Fine-tune embeddings on task or freeze them?
 * Both options are popular
 
 
-Applications of pre-trained word embeddings
+### Applications of pre-trained word embeddings
 
 # Lecture 6 CNN
 
@@ -939,8 +937,7 @@ Model learned french words via training data without command.
 * No (or few) assumptions are baked into the architecture (no notion of which words are neighbors in the sentence, sequentiality, etc.)
 * The lack of prior knowledge often means that the Transformer requires more training data than an RNN/CNN to achieve a certain performance
 * But when presented with sufficient data, it usually outperforms them 
-* After Christmas: Transfer learning as a way to pre-train Transformers
-on lots of data
+* After Christmas: Transfer learning as a way to pre-train Transformers on lots of data
 
 The Bahdanau model is still an RNN, just with attention on top.
 Architecture that consists of attention only: Transformer (Vaswani et al. (2017), “Attention is all you need”)
