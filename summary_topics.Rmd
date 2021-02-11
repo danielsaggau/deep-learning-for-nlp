@@ -9,15 +9,20 @@ fontsize: 9 pt
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 # Lecture 1 Chapter 1: Introduction to Machine Learning – Overview
 
 ## Why Machine Learning is Useful Today
 
-Humans get lost in the lake of ever-growing volumes and varieties of available data Big Data , thus automatic methods for analyzing the data or making decisions based on the data are necessary.
+Humans get lost in the lake of ever-growing volumes and varieties of available data Big Data , thus automatic 
+methods for analyzing the data or making decisions based on the data are necessary.
+
 Unstructured data (e.g. text-heavy data) 
 Unstructured Data often needs a lot of preprocessing before it can be further used. 
 For humans this is usually an awkward task and is better delegated to a ”machine”. 
+
 Scientific laws (e.g. laws of classical mechanics) can most often not be applied to the data at hand, we can only learn something (usually called a model) from the observed example data.
+
 Accurate model building can be a time-consuming and frustrating process, especially for complex data and has to be done again and again for different data. 
 Machine learning promises to reduce the use of human resources, also leading to more accurate models.
 
@@ -26,18 +31,28 @@ Machine learning promises to reduce the use of human resources, also leading to 
 The resulting models are often black boxes.
 That makes it often difficult to evaluate the reliability and robustness of a model. 
 Since there is a zoo of available ML algorithms, model agnostic methods are needed.
+
 It may be difficult to explain and interpret a model.
 For example, a credit scoring model should be transparent why a certain customer is getting a credit but another not.
+
 The model can only learn from the data which is available to train it. If the training data does not reflect or cover the target population well or contains stereotypes (e.g. gender stereotypes in text data), its application may lead to so-called biased results.
+
 The computational resources needed are often very high (e.g. GPUs are still expensive).
+
 Depending on the complexity of the problem, a high number of examples (statistically: a high sample size) is needed to build accurate models.
+
+### Formal Definition
 
 “A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”
 (Mitchell 1997)
-Learning: Attaining the ability to perform a task T.
-A set of examples (“experience”) represents a more general task.
-Examples are (usually) described by features. The features are often represented by numeric vectors x in Rm (sometimes also by matrices, tensors).
 
+Learning: Attaining the ability to perform a task T.
+
+A set of examples (“experience”) represents a more general task.
+
+Examples are (usually) described by features. 
+
+The features are often represented by numeric vectors x in Rm (sometimes also by matrices, tensors).
 
 Typical rectangular data sets are defined as follows. Dataset: collection of examples
 Data is stored in a design matrix:
@@ -47,6 +62,7 @@ Examples: Xi,j is the count of feature j (e.g. a stem form) in document i or the
 ## Characterization of the Learning Process
 
 An often used characterization is supervised versus unsupervised learning. Unsupervised learning:
+
 * Model the data in X , or find interesting properties of X .
 * Example: Clustering (find groups of similar images/documents)
 * Training data: only X .
@@ -74,11 +90,14 @@ Types of Tasks: Classification, Regression, Structured Prediction, Anomaly Detec
 
 Which of k classes does an example belong to? f :Rn →{1...k}
 Typical example: Categorize image patches
+
 * Feature vector: color intensities for each pixel; derived features.
 * Output categories: Predefined set of labels
 
 ### Task: Regression
-Predict a numerical value given some input.
+
+* Predict a numerical value given some input.
+* stock price
 
 ### Task: Structured Prediction
 
@@ -92,14 +111,14 @@ Often involves search and problem-specific algorithms.
 
 ### Task: Reinforcement Learning
 
-In reinforcement learning, the model (also called agent) needs to select a series of actions, but only observes the outcome (reward) at the end.
-The goal is to predict actions that will maximize the outcome.
-EMNLP 2017: The computer negotiates with humans in natural language in order to maximize its points in a game
+* In reinforcement learning, the model (also called agent) needs to select a series of actions, but only observes the outcome (reward) at the end.
+* The goal is to predict actions that will maximize the outcome.
+* EMNLP 2017: The computer negotiates with humans in natural language in order to maximize its points in a game
 
 ### Task: Anomaly Detection
 
-Detect atypical items or events.
-Common approach: Estimate density and identify items that have low probability.
+* Detect atypical items or events.
+* Common approach: Estimate density and identify items that have low probability.
 
 Examples:
 
@@ -110,8 +129,19 @@ Often items categorized as outliers are sent to humans for further scrutiny.
 
 ### Task: Anomaly Detection
 
-ACL 2017: Schizophrenia patients can be detected by their non-standard use of metaphors, and more extreme sentiment
- expressions.
+ACL 2017: Schizophrenia patients can be detected by their non-standard use of metaphors, and more extreme sentiment expressions.
+
+### Algorithms in supervised ML
+
+#### Supervised
+
+linear regression
+logistic regression
+decision trees (e.g. C 4.5)
+CART
+random forest
+Boosting, e.g.
+(artificial) neural networks
 
 ### Some Algorithms for unsupervised ML
 
@@ -127,8 +157,10 @@ Autoencoders
 “A computer program is said to learn [...] with respect to some [...] performance measure P, if its performance [...] as measured by P, improves [...]”
 Quantitative measure of algorithm performance. Task-specific.
 
-Discrete vs. Continuous Loss Functions
-Discrete Loss Functions
+### Discrete vs. Continuous Loss Functions
+
+**Discrete Loss Functions**
+
 * Accuracy (how many samples were correctly labeled?)
 * Error Rate (1 - accuracy)
 * Precision / Recall
@@ -137,13 +169,15 @@ relevant category is rare. Often used is the F1-Score (harmonic mean of precisio
 * Discrete loss functions cannot indicate how wrong a wrong decision is.
 * They are not differentiable (hard to optimize)
 * Often algorithms are optimized using a continuous loss (e.g. hinge loss) and evaluated using another loss (e.g. F1-Score).
+* Accuracy may be biased in data very skewed
 
 ### Examples for Continuous Loss Functions
 
-Squared error (regression): (y - f (x ))2 Hinge loss (classification):
-* max(0,1-f(x)·y)
-* (assume that y in {-1, 1})
-...
+* Squared error (regression): (y - f (x ))2 
+* Hinge loss (classification):
+  * max(0,1-f(x)·y)
+  * (assume that y in {-1, 1})
+
 These loss functions are differentiable. 
 So we can use them for gradient descent (more on that later)
 
@@ -151,20 +185,26 @@ So we can use them for gradient descent (more on that later)
 
 Learn complex functions, that are (recursively) composed of simpler functions.
 Many parameters have to be estimated.
-Main Advantage: Feature learning
+Input layer, hidden layer and output layer.
+
+### Main Advantage: Feature learning:
 
 * Models learn to capture most essential properties of data (according to some performance measure) as intermediate representations.
-* No need to hand-craft feature extraction algorithms
+* No need to hand-craft feature extraction algorithms 
+* Algorithmes themselves creates features on every layer
+* Feature learning as apposed to feature engineering 
+* Still builds on general ML components like the loss function
 
-Neural Networks
-First training methods for deep nonlinear NNs appeared in the 1960s (Ivakhnenko and others).
-Increasing interest in NN technology (again) since around 10 years ago (“Neural Network Renaissance”):
-Orders of magnitude more data and faster computers now.
+### Neural Networks
 
-Many successes:
+* First training methods for deep nonlinear NNs appeared in the 1960s (Ivakhnenko and others).
+* Increasing interest in NN technology (again) since around 10 years ago (“Neural Network Renaissance”):
+* Orders of magnitude more data and faster computers now.
+
+#### Many successes:
 
 * Image recognition and captioning
-* Speech regonition
+* Speech recognition
 * NLP and Machine translation
 * Game playing (AlphaGO)
 
@@ -172,26 +212,10 @@ Many successes:
 
 Deep Learning builds on general Machine Learning concepts.
 L is called loss function or cost function (we will discuss it further in the next chapter).
+Loss function measures approximation/prediction and the label.
 Fitting data vs. generalizing from data.
-
-Summary
-
-# Machine learning definition
-
-* Data
-* Task
-* Cost function
-
-# Machine learning tasks
-
-* Classification
-* Regression
-*
-### Deep Learning
-
-* many successes in recent years
-* feature learning instead of feature engineering
-* builds on general machine learning concepts
+If too much adaptation, we get overfitting.
+If too simple, under-fitting.
 
 # Lecture 2 Introduction to Machine Learning – ML Basics
 
@@ -206,26 +230,76 @@ Summary
 
 ## Scalars, vectors, matrices and tensors I
 
+Scalar is a real time X.
+A Vector is an array of real numbers.
+We define vector as column vectors, each element stack on top of each other.
+A matrix is a rectangular scheme of real numbers or a 2-dimensional array.
+Tensor is a multidimensional array.
+
 ## Transpose
+
+Exchange rows and columns.
 
 ## Addition
 
-Two matrices A and B can usually only be added if they have the same dimensions. The addition C = A + B is done element by element, i.e. cij = aij + bij . Example
+Two matrices A and B can usually only be added if they have the same dimensions. 
+The addition C = A + B is done element by element, i.e. cij = aij + bij.
+If b is a scalar = C = A + b added to each element of A.
 
+## Multiplication 
+
+Only multiplied if number of rows A equal number of rows B.
+The result C = AB.
+Dot product defined when same length.
+if b is scalar, C = bA, means that each element of A is multiplied by b.
+One frequent used is element by element multiplication aka:
+**Hadamard Product** if have same dimensions. 
+The Kronecker product, each element of b is multiplied by a matrix. 
+
+### Multiplication rules 
+
+C(A+B) = CA+ CB
+C(BA) = (CB)A
+(AB)^T= B^T A^T
+
+* Trace is the sum of diagonal elements. 
+
+Special matrices: 
+
+A^-1 A = I
+Inverse only exist if all rows/columns are linear independent. 
+Eigenvalue decomposition.
+
+$A = \Gamma \Lambda \Gamma ^T$
+
+Gamma = Orthogonal eigenvalues of A. 
+And Lambda is the diagnomal matrix with eigenvalues on the diagonal. 
+
+### Norms 
+
+L1 - p is equal to 1 
+L2 - euclidean norm 
+
+* Frobenius norm (#TODO)
+
+## Derivations
+
+Gradient notation is used for derivative of a scalar wrt a vector w.
+Chain-rule important for backpropagation.
 
 ### Probabilities in NLP
 
 * In NLP, probabilities are put on the words of a corpus or sequences of words (e.g. a sentence)
-* These distributions are discrete because each word or each sequence of words is treated as a possible outcome
+* These distributions are discrete because each word or each sequence of words is treated as a possible outcome.
 * Language models are based on probabilities and maximization of the log-likelihood (or minimization of the negative log-likelihood), which is also based on (log-)probabilities.
-
 
 ### Discrete random variables
 
-In NLP, the words may be treated as discrete random variables W . The number of words |V | in a corpus is finite, but may be huge (in
-the millions)
-A realization of W is a certain word w, e.g. house
-The words in a sentence occur not independently from each other, i.e. the words are correlated. Therefore, we have to consider sequences of words as multivariate random variables
+In NLP, the words may be treated as discrete random variables W. 
+The number of words |V | in a corpus is finite, but may be huge (in the millions).
+A realization of W is a certain word w, e.g. house.
+The words in a sentence occur not independently from each other, i.e. the words are correlated. 
+Therefore, we have to consider sequences of words as multivariate random variables.
 
 ### Probability distributions in NLP
 
@@ -234,85 +308,114 @@ The right hand side of the equation is a short form of the left hand side. Examp
 Special choices of n:
 * n = 1: Unigrams
 * n = 2: Bigrams
+
 Generally: n-grams
 Conditional distributions, e.g. the probability of the next word given a sequence of previous words:
 
 ### Factorization of the joint distribution
 
-Sometimes called chain rule for conditional probabilities
-The joint distribution can be written as a product of conditional distributions
+Sometimes called chain rule for conditional probabilities.
+The joint distribution can be written as a product of conditional distributions.
 
 ### Markov assumptions
 
-The context of a word cannot be arbitrary long
-A fixed (or maximum) size for the context is usually assumed
+The context of a word cannot be arbitrary long.
+A fixed (or maximum) size for the context is usually assumed.
 Under the Markov assumptions, the joint distribution can be factorized by conditional probabilities with a fixed context size.
-Example: Assume that P(wi|wi-1,...,w1) = P(wi|wi-1) (i.e., we only consider bigrams). Then
+Example: Assume that P(wi|wi-1,...,w1) = P(wi|wi-1) (i.e., we only consider bigrams). 
 
 ### Bengio’s et al. neural network language model (NNLM)
 
-In 2003, Bengio et al. introduced the NNLM which uses the introduced factorization with the Markov property
+In 2003, Bengio et al. introduced the NNLM which uses the introduced factorization with the Markov property.
+Uses introduced factorization with the Markov property.
 
 ### More on random numbers and probabilities
+
 Discrete random variables also occur in other contexts than NLP. Examples:
-* Binary random variables (Bernoulli experiments) are a model for experiments with two possible outcomes (0 or 1), e.g. coin tossing.
-* Poisson random numbers are often for counts, e.g. the number of car accidents during a certain interval (month, year) in a city.
-Random numbers can also be continuous, e.g. Gaussian random numbers, i.e., X is Gaussian, if X ~ N($\mu$,sigma2)) where $\mu$ andsigma 2 are two parameters which have usually to be estimated from the data. The distribution of random numbers is often given in terms of a probability density f (x) which is positive and integrates to 1. For a Gaussian, the density is
+  
+  * Binary random variables (Bernoulli experiments) are a model for experiments with two possible outcomes (0 or 1), e.g. coin tossing.
+  * Poisson random numbers are often for counts, e.g. the number of car accidents during a certain interval (month, year) in a city.
+
+* Random numbers can also be continuous, e.g. Gaussian random numbers, i.e., X is Gaussian, if X ~ N($\mu$,sigma2)) where $\mu$ andsigma 2 are two parameters which have usually to be estimated from the data. The distribution of random numbers is often given in terms of a probability density f (x) which is positive and integrates to 1. For a Gaussian, the density is
 
 ### Expectation and variance
+
 If g is a function of a random variable X with density function p(x), the expectation or expected value of g is the mean value or average over all possible values of X:
 
-If f is disrete, the integral is replaced by a sum.
-The variance of g is then
+If f is discrete, the integral is replaced by a sum.
+The variance of g is then:
+
+#TODO
 
 ### Theorem of Bayes
 
 The theorem of Bayes can be stated for probabilities and densities
 * For probabilities, it solves the following problem: if it is known that an
-event B has occured (e.g. that the thrown number on top of a dice is odd) than the probability of another event A (e.g. a 3 has been thrown) can be calculated. This is usually denoted as
-
-For densities: let p(x,y) the joint density of two random variables, p(x) the marginal and p(y|x) the conditional density. 
+event B has occurred (e.g. that the thrown number on top of a dice is odd) than the probability of another event A (e.g. a 3 has been thrown) can be calculated. This is usually denoted as: #TODO
+* For densities: let p(x,y) the joint density of two random variables, p(x) the marginal and p(y|x) the conditional density. 
+This holds also if x is an n-dimensional random vector. 
 
 ## Train-/Dev-/Test-Splits I
 
-To train a machine learning model, several strategies are possible.
+* To train a machine learning model, several strategies are possible.
 One strategy is to split the whole available training data into two or three parts. 
-If the algorithm requires hyperparameter tuning, a split in three parts is necessary:
+If the algorithm requires hyperparameter tuning, a split in three parts is necessary: #TODO
 The training set is used to generate the ML model (given that certain hyperparameters are fixed at some values), the development set is used to compare different hyperparameter values and to select (in best case) the optimal ones or at least those who give the best evaluation on the dev set.
 The test set is finally used to measure the performance of the ML model with the optimal hyperparameters.
-Another strategy is to use cross validation.
+
+* Another strategy is to use cross validation.
 
 ## Loss function I
-A loss function L is a function into the positive real numbers (including 0).
-Let y the actual value and yˆ a prediction then the loss function is given by L = L(y,yˆ).
-Loss functions can be discrete or continuous
-For optimization purposes, continuous loss functions are preferable
-Supervised learning tasks try to minimize the expected loss ˆˆ
-ˆ
-Y = f (x) .
-The expected loss is then EL = E(x,y)(L(Y,f(x)).
-EL = E(x,y)(L(Y,Y)). Usually, the prediction Y is estimated as a prediction function f (x), depending on the features x,
+
+* A loss function L is a function into the positive real numbers (including 0).
+* Let y the actual value and yˆ a prediction then the loss function is given by L = L(y,yˆ).
+* Loss functions can be discrete or continuous
+*For optimization purposes, continuous loss functions are preferable
+Supervised learning tasks try to minimize the expected loss $EL = E(x,y)(L(Y,\hat{Y})).$
+Usually, the prediction Y is estimated as a prediction function f (x), depending on the features x,
+
+$\hat{Y} = f (x)$ \newline
+
+The expected loss is then $EL = E_{(x,y)}(L(Y,f(x))$.
 
 ## Loss function II
+
 If one chooses a quadratic loss function L(Y , f (X )) = [Y - f (X )] , the expected loss (or prediction error) is
 
 Factorizing P(Y,X) = P(Y|X)P(X), this can be written as
 
+$E(L(Y, f(x)) = E_xE_{y|x}([Y-f(X)]^2|X)$
+
 A pointwise minimization leads to
+
+$f(x) = argminE_{y|x}[Y-c]^2|X=x)$
 
 This is called the regression function (conditional expectation)
 
+f(x)= E(Y|X=x)
+
 ### Loss function III
-ˆ
+
 Discrete case: let C the observed class and C(X) the function which
-assigns each X a certain class C from C. Let the classes denoted as 1, 2, . . . , K . A possible loss function is the 0-1-loss. A wrong assignment is punished by 1:
+assigns each X a certain class C from C. Let the classes denoted as 1, 2, . . . , K . 
+A possible loss function is the 0-1-loss. A wrong assignment is punished by 1:
+
+#TODO
+
+It holds 
+
+#TODO
+
+With the 0-1-loss one gets
 
 ### Loss function IV
 
 This is the so-called Bayes-classifier which assigns the class which has the highest conditional probability.
-Note that the expected loss is estimated from test data using the test samples (empirical loss). Therefore the distributions are not necessary to do the calculation of the empirical loss. We simply calculate the average over all validation or test samples (which is a consistent estimate for the expected loss):
+Note that the expected loss is estimated from test data using the test samples (empirical loss). 
+Therefore the distributions are not necessary to do the calculation of the empirical loss.
+We simply calculate the average over all validation or test samples (which is a consistent estimate for the expected loss):
 
-whereYj =f(xj)isthepredictionofthejthsampleandm' isthe number of samples.
+where $Yj =f(x_j)$ is the prediction of the jth sample and m' is the number of samples.
 The negative log-likelihood is often used as loss function (we will see an example later).
 
 ### Performance measures (supervised learning) I
@@ -330,19 +433,32 @@ In multiclass problems, a generalization can be obtained by two approaches. One 
 
 ### Sigmoid function
 
+Values between 0 and 1.
+
 ### Softmax function
+
+generalization of the sigmoid function.
 
 ### Rectified linear unit (ReLu)
 
-# Lecture 3 Introduction to Machine Learning – Linear and Logistic Regression
+Derivative between 0 and 1.
+
+# Lecture 3 Linear and Logistic Regression
+
+## Introduction to Machine Learning – 
 
 **Linear Regression**
 
 In linear regression, the prediction y^ of a label y is a linear function: 
+
+$\hat{y}=w^Tx=\sum_{j=1}^n w_jx_j$
+
 Note, that in this notation, the parameter vector w in Rn stands already for the estimated parameter vector.
-Weight wj decides if value of feature xj increases or decreases prediction yˆ.
+Weight wj decides if value of feature xj increases or decreases prediction y.
+Only linear in the weights.
 
 ### Linear Regression: Mean Squared Error
+
 Mean squared error of training (or test) data set is the sum of squared differences between the predictions and labels of all m instances.
 
 ### Learning: Improving on MSE
@@ -512,7 +628,9 @@ Applying the model on test data: Predict y(i) = 1 if
 
 No closed form solution for maximizing NLL, iterative methods necessary.
 
-# Lecture 4 Introduction to Machine Learning - Optimization, Deep Feed Forward Networks, Backproagation, Regularization
+# Lecture 4 Optimization, Deep Feed Forward Networks, Backproagation, Regularization
+
+## Introduction to Machine Learning
 
 # Optimization
 
@@ -536,10 +654,7 @@ Control locality by the learning rate eta.
 Gradient descent is slow: For relatively small step in the right direction, all of training data has to be processed.
 This version of gradient descent is often also called batch gradient descent.
 
-
-
 #TODO 
-
 
 ## Other Choices for Hidden Units
 
@@ -641,7 +756,7 @@ Design choice: Fine-tune embeddings on task or freeze them?
 
 ### Applications of pre-trained word embeddings
 
-# Lecture 6 CNN
+# Lecture 6 Convolutational Neural Networks
 
 An architecture is an abstract design for a neural network
 
@@ -651,11 +766,11 @@ Examples of architectures:
 * Recurrent Neural Networks (RNNs)
 * Transformers (self-attention)
 
-The choice of architecture is often informed by assumptions about the data, based on our domain knowledge
+locality:The choice of architecture is often informed by assumptions about the data, based on our domain knowledge
 
 translation invariance: The features that make up a meaningful object do not depend on that object’s absolute position in the input.
 
-sequentiality: NLP: Sentences should be processed left-to-right or right-to-left. This one is falling out of fashion, since people are replacing recurrent neural networks with self-attention networks.
+Sequentiality: NLP: Sentences should be processed left-to-right or right-to-left. This one is falling out of fashion, since people are replacing recurrent neural networks with self-attention networks.
 
 Are these assumptions true? 
 
@@ -673,29 +788,37 @@ So what is a filter? What is a filter bank?
 
 Let’s say that we want to train a linear regression model to predict some variable of interest from each datapoint.
 Since the raw data is noisy, it makes sense to smoothe it with our rolling average filter first:
-$y =wh+b; h=(f \times x) jjjj$
-But maybe we should weight the datapoints in our 7-day window differently? Maybe we should give a higher weight to datapoints close to the current day j?
-We can manually engineer a filter that we think is better, for example: 
-#todo
+$\hat{y}_j =wh_j+b$\newline
+$h_j=(f \times x)_j$\newline
+
+But maybe we should weight the datapoints in our 7-day window differently?
+Maybe we should give a higher weight to datapoints close to the current day j?
+We can manually engineer a filter that we think is better (closest high, later smaller)
 Alternative: Let the model choose the optimal filter parameters, based on the training data.
 How? Gradient descent!
 
-**Bias and nonlinearities:**
-* In a real CNN, we usually add a trainable scalar bias b, and we apply a nonlinearity g (such as the rectified linear unit):
-K
+## Backpropagation for 1 D Layer 
+
 #TODO
+
+## Bias and nonlinearities:
+
+* In a real CNN, we usually add a trainable scalar bias b, and we apply a nonlinearity g (such as the rectified linear unit):
+
+#TODO
+
 Edge cases:
-* Possibel strategies for when the filter overlaps with the edges (beginning/end) of x:
+* Possible strategies for when the filter overlaps with the edges (beginning/end) of x:
 * Outputs where filter overlaps with edge are undefined, i.e., h has fewer dimensions than $x(K - 1$ fewer, to be exact)
   * Pad x with zeros before applying the filter
   * Pad x with some other relevant value, such as the overall average, the
 first/last value, ...
-Stride:
+**Stride:**
 * The stride of a convolutional layer is the “step size” with which the filter is moved over the input
 * We apply f to the j’th window of x only if j is divisible by the stride.
 * In NLP, the stride is usually 1.
 
-**Convolution with more than one axis**
+## Convolution with more than one axis
 
 Extending the convolution operation to tensors with more than one axis is straightforward.
 Let $X \in RJ1×...×JL$ be a tensor that has L axes and let $F \in RK1×...×KL$ be a filter.
@@ -728,22 +851,26 @@ Then our output is a tensor of shape $H \in RJ1×...×JL,N$
 * (assuming that we are padding the first L axes of X to preserve their dimensionality in H) where:
 
 **Assumptions behind convolution**
-Translation invariance: Same object in different positions. 
-* Parameter sharing: Filters are shared between all positions.
-Locality: Meaningful objects form coherent areas
-* In a single convolutional layer, information can travel no further than a
-few positions (depending on filter size) Hierarchy of features from simple to complex:
-* In computer vision, we often apply many convolutional layers one after another
-* With every layer, the information travels further, and the feature vectors become more complex
-* Pixels * edges * shapes * small objects * bigger objects
 
-# **Pooling layers**
+* **Translation invariance:** Same object in different positions. 
+  * **Parameter sharing:** Filters are shared between all positions.
+* **Locality:** Meaningful objects form coherent areas
+  * In a single convolutional layer, information can travel no further than a few positions (depending on filter size) 
+* Hierarchy of features from simple to complex:
+  * In computer vision, we often apply many convolutional layers one after another
+  * With every layer, the information travels further, and the feature vectors become more complex
+  * Pixels -> edges -> shapes -> small objects -> bigger objects
 
-Pooling layers are parameter-less
+## Pooling layers
+
+Pooling layers are parameter-less.
 Divide axes of H (excluding the filter/feature axis) into a coarse-grained “grid”.
 Aggregate each grid cell with some operator, such as the average or maximum.
 Example (shown without a feature axis):
-When pooling, we lose fine-grained information about exact positions
+
+#TODO
+
+When pooling, we lose fine-grained information about exact positions.
 In return, pooling allows us to aggregate features from a local neighborhood into a single feature.
 * For example, if we have a neighborhood where many “dog features” were detected (meaning, shapes that look like parts of a dog), we want to aggregate that information into a single “dog neuron”
 
@@ -766,7 +893,7 @@ Pooling is less frequently used in NLP.
 If the task is a word-level task (i.e., we need one output vector per word), we can simply use the output of the final convolutional layer – no pooling needed.
 If the task is some sentence-level task (i.e., we need a single vector to represent the entire sentence), we usually do a “global” pooling step over the entire sentence after the last convolutional layer:
 
-# Lecture 7 RNN 
+# Lecture 7 Recurrent Neural Networks
 
 Assumption: Text is written sequentially, so our model should read it sequentially
 “RNN”: class of Neural Network architectures that process text sequentially (left-to-right or right-to-left)
@@ -790,7 +917,6 @@ For now, let’s pretend that every time step (every layer) has its own
 (j)
 dummy parameters $\theta$ , which are identical copies of theta
 
-
 ## LSTM 
 
 Two states: 
@@ -800,6 +926,7 @@ Two states:
 
 Candidate state h in Rd corresponds to h in the Vanilla RNN d
 Interactions are mediated by “gates” in (0, 1) , which apply elementwise:
+
 * Forget gate f decides what information from c should be forgotten 
 Input gate i decides what information from h should be added to c
 * Output gate o decides what information from c should be exposed to h
@@ -808,9 +935,9 @@ Each gate and the candidate state have their own parameters
 ## Gated Recurrent Unit 
 
 Proposed by *Cho et al. (2014)*
-Lightweight alternative to LSTM, with only one state and three sets of parameters
-State h is a dynamic “interpolation” of long and short term memory
-Reset gate r in (0, 1)^d controls what information passes from h to candidate state h hat
+Lightweight alternative to LSTM, with only one state and three sets of parameters.
+State h is a dynamic “interpolation” of long and short term memory.
+Reset gate r in (0, 1)^d controls what information passes from h to candidate state h hat.
 
 ## Bidirectional RNNs
 The bidirectional RNN yields two sequences of hidden states:
@@ -818,9 +945,12 @@ The bidirectional RNN yields two sequences of hidden states:
 Question: If we are dealing with a sentence classification task, which
 states should we use to represent the sentence?
 #TODO
+
 * Concatenate [h ; h ], because they have “seen” the entire sentence
+
 #TODO For tagging task, represent the j’th word as [h ; h ]
 Question: Can we use a bidirectional RNN for autoregressive language modeling?
+
 * No. In autoregressive language modeling, future inputs must be unknown to the model (since we want to learn to predict them).
 * We could train two separate autoregressive RNNs (one per direction), but we cannot combine their hidden states before making a prediction
 In sequence-to-sequence (e.g., Machine Translation), the encoder can be bidirectional, but the decoder cannot (same reason)
@@ -833,8 +963,9 @@ Question: Is this how you would translate a sentence?
 
 * A human translator might look at the source sentence multiple times, and translate it “bit by bit”
 * Attention is meant to mimick this process
-Proposed by Bahdanau et al. 2015, developed into stand-alone
-architecture (“Transformer”) by Vaswani et al. 2017 Currently the most popular architecture for NLP This week: Attention as a way to make RNNs better Next week: Transformers
+
+Proposed by Bahdanau et al. 2015, developed into stand-alone.
+architecture (“Transformer”) by Vaswani et al. 2017 Currently the most popular architecture for NLP This week: Attention as a way to make RNNs better Next week: Transformers.
 
 ## Attention 
 
@@ -894,7 +1025,6 @@ Each equation corresponds to one step from our attention recipe. Exercise: Figur
 
 * Important to note: The Bahdanau model is still an RNN, just with attention on top.
 * Next week, we get rid of the RNN completely and introduce the attention-only Transformer architecture.
-
 
 # Lecutre 8 Self-Attention and the Transformers 
 
@@ -1434,7 +1564,6 @@ and a backward LM
 to arrive at the following loglikelihood:
 
 Character-based (context-independent) token representations
-
 
 Two-layer biLSTM as main architecture:
 
