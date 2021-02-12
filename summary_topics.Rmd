@@ -3,7 +3,7 @@ title: "Deep Learning for NLP Summary"
 author: "Daniel Saggau"
 date: "2/4/2021"
 output: pdf_document
-fontsize: 9 pt
+fontsize: 12 pt
 ---
 
 ```{r setup, include=FALSE}
@@ -883,7 +883,7 @@ Images are 2D, but text is a 1D sequence (of words, n-grams, etc).
 Words are usually represented by M-dimensional word embeddings (e.g., from Word2Vec)
 So on text, we do 1-D convolution with M input features:
 * Input matrix: $X in RJ×M$
-* Filter bank of $N filters: F in RK×M×N;K < J$
+* Filter bank of $N filters: F \in R^{K×M×N};K < J$
 * Output matrix: $H in RJ×N$
   * (assuming that we padded X with zeros along its first axis)
 Usually, CNNs in NLP are not as deep as CNNs in Computer Vision –
@@ -895,69 +895,201 @@ If the task is some sentence-level task (i.e., we need a single vector to repres
 
 # Lecture 7 Recurrent Neural Networks
 
-Assumption: Text is written sequentially, so our model should read it sequentially
-“RNN”: class of Neural Network architectures that process text sequentially (left-to-right or right-to-left)
-Generally speaking:
+* Assumption: Text is written sequentially, so our model should read it sequentially
+* “RNN”: class of Neural Network architectures that process text sequentially (left-to-right or right-to-left)
+* Generally speaking:
 
-* Internal “state” $h$
-* RNN consumes one input $x(j)$ per time step $j$
-*  Update function:
-$h(j)=f(x(j),h(j-1); \theta)$
-  * where parameters $\theta$ are shared across all time steps
+  * Internal “state” $h$
+  * RNN consumes one input $x(j)$ per time step $j$
+  *  Update function: $h(j)=f(x(j),h(j-1); \theta)$
+    * where parameters $\theta$ are shared across all time steps
 
 **Vanilla RNN**
 
+* h is initial stage 
+* x is our input 
+* theta be our parameters 
+
+**Which words does h depend on?**
+
+The cat sat:
+
+* h(1) = the 
+* h(2) = the cat 
+* h(3) = the cat sat 
+
+### Vanilla RNN cell 
+
+With a lose node, we have a parametrized linear layer with non-linearity. 
+
 #TODO
+
+## Training RNN's
+
+RNN for binary sentence classification:
+
+Iterative compute hidden state. 
 
 ### Backpropagation through time
 
-RNNs are trained via “backpropagation through time”
-To understand how this works, imagine the RNN as a Feed-Forward Net (FFN), whose depth is equal to the sentence length
-For now, let’s pretend that every time step (every layer) has its own
-(j)
-dummy parameters $\theta$ , which are identical copies of theta
+Assume we calculated partial derivatives. 
+Since we are pretending its a normal feed forward normal, we can apply backpropagation.
+RNNs are trained via “backpropagation through time”.
+To understand how this works, imagine the RNN as a Feed-Forward Net (FFN), whose depth is equal to the sentence length.
+For now, let’s pretend that every time step (every layer) has its own (j) dummy parameters $\theta$ , which are identical copies of theta.
+Gradients are simply the sum of the dummy parameters. 
 
-## LSTM 
+## Vanishing Gradients 
+
+* Means that impact that input has on gradient is smaller when it is further away from the loss in the computational graph.
+* Means that if words that your RNN should be paying attention toa re far from the loss the network will not adjust its weights to those words. 
+
+## Exploding gradients 
+
+Can adjust non-linearity with a derivative larger than 1. 
+Vanisher is the less evil that exploding. 
+
+## Long Short Term Memory Network (LSTM)
+
+Became popular in 2010.
 
 Two states: 
 
 * h (“short-term memory”)
 * c is (“long-term memory”)
 
-Candidate state h in Rd corresponds to h in the Vanilla RNN d
-Interactions are mediated by “gates” in (0, 1) , which apply elementwise:
+Candidate state h in Rd corresponds to h in the Vanilla RNN d.
+Interactions are mediated by “gates” in (0, 1) , which apply element wise:
 
-* Forget gate f decides what information from c should be forgotten 
-Input gate i decides what information from h should be added to c
-* Output gate o decides what information from c should be exposed to h
-Each gate and the candidate state have their own parameters
+  * Forget gate f decides what information from c should be forgotten
+  * Input gate i decides what information from h should be added to c
+  * Output gate o decides what information from c should be exposed to h 
+  
+* Each gate and the candidate state have their own parameters.
+* Gradient highway from c_j to cj_1 with no non-linearties or matrix multiplications.
+
+At time step j we calculate the gate vector. 
+We add everything together including the bias and apply an element based sigmoid nonlinearity.
+Next we calculate the candidate state. 
+In the next step, we calculate the forget gate, the previous memory. 
+Since the forget and input gate are close to 0 and 1. 
+We are selectively adding new entries with i. 
+Which entries we erase is up to the model.
+We apply our nonlinearity to see in the next step. 
+
+**insert graph**
+
+* blue cell parametrizations 
+
+* input output and forget gate + candidate state
+* Input to candidate state and calculate the new state. 
+* red arrow is the gradient highway. 
+* There are no nonlinearities on the highway. 
+* All gradients that are passed to close to 1 are moving without restricition and all close to 0 are stopped.
+* Gradients can travel a lot further than in a Vanilla RNN.
 
 ## Gated Recurrent Unit 
 
 Proposed by *Cho et al. (2014)*
+GRU only has one state and 3 sets of parameters.
 Lightweight alternative to LSTM, with only one state and three sets of parameters.
 State h is a dynamic “interpolation” of long and short term memory.
+It is up to the model, how many dimensions to assign to the memory. 
 Reset gate r in (0, 1)^d controls what information passes from h to candidate state h hat.
+The update gate z interpolates between h and h_bar. 
 
-## Bidirectional RNNs
+At step j we first calculate the reset and update gate.
+Then we select some.
+Then we calculate the candidate state.
+We use the z to interpolate.
+The new state h_j: 
+
+#TODO
+
+When we plot the cell as a computation cell, we have a reset gate, update gate and candidate state. 
+We have the interpolation between the previous state and the candidate state. 
+Again, we see that we have a gradient highway. 
+Any gradients that respond to 0 in the update gate z. 
+Any gradients that are stuck to 1 are kept. 
+
+Vanilla RNN worse, and the GRU and LSTM is not clearly better. 
+GRU is faster to train though.
+Always best to use both, and if no time use GRU.
+
+Be able to name components and be able to stay what they do conceptually. 
+Also, be able to tell which architecture they belong to.
+
+#TODO
+
+## RNN Applications 
+
+Classifying sentences, or tagging problems.
+In part of speech tagging, we want to tag every word with its part of speech.
+First we would code into hidden words.
+Imagine h stems from one of the above models.
+Then we feed the H vector into a linear layer. 
+The linear layer is shared between all time steps.
+The output of the hidden layer is a softmax function. #TODO
+During inference, when evaluating our model or making predictions, we take the argmax of our model.
+We take the tag that maximizes our abilities. 
+
+Next step, we do **autoregressive language modelling.**
+After reading the beginning of sentence tokening, we want to read the next word. 
+The output space is the entire set of next words. 
+The predicted probability is compared against the true next words. 
+During training our input is usually the next word.
+During inference, when we use the model to generate the actual text, we would instead feed back the actual predictions. 
+Gummybear, we would feed gummybear into timestep 2. 
+
+## Sequence to sequence Model (Machine Translation)
+
+The 2 RNN's may share parameters or be completely separate.
+First the encoder #TODO
+
+page is then the initial state of the decoder.
+A decoder functions exactly like an ALM.
+During training the inputs of the decoder are the words of the true target sentence.
+During inference, we don't know what the true target sentence is. 
+
+## Extensions: Multilayer RNNs, bidrectionality
+
+### Multilayer RNNs 
+
+Is a stack of numerous RNNs (also mixture).
+Each RNN has its own parameters.
+The input vectors to the first RNN are the word embedding as usual. 
+
+### Bidirectional RNNs
+
+Reads from both directions.
+Consists of two RNNS with two parameters. 
+Theta forward and backward.
+
 The bidirectional RNN yields two sequences of hidden states:
 #TODO
-Question: If we are dealing with a sentence classification task, which
-states should we use to represent the sentence?
+# Important
+Question: If we are dealing with a sentence classification task, which states should we use to represent the sentence?
+
+Which are the states that have seen the entire sentence, are the forward h_j and backward h_j. 
+Usually we would concatenate these two and feed them towards our final layer.
+
 #TODO
 
 * Concatenate [h ; h ], because they have “seen” the entire sentence
 
 #TODO For tagging task, represent the j’th word as [h ; h ]
+# Important
 Question: Can we use a bidirectional RNN for autoregressive language modeling?
 
 * No. In autoregressive language modeling, future inputs must be unknown to the model (since we want to learn to predict them).
 * We could train two separate autoregressive RNNs (one per direction), but we cannot combine their hidden states before making a prediction
-In sequence-to-sequence (e.g., Machine Translation), the encoder can be bidirectional, but the decoder cannot (same reason)
+In sequence-to-sequence (e.g., Machine Translation), the encoder can be bidirectional, but the decoder cannot (same reason).
 
 ### Limitations of RNNs
-At a given point in time j, the information about all past inputs is “crammed” into the state h (and c for an LSTM)
-So for long sequences, the state becomes a bottleneck
+
+At a given point in time j, the information about all past inputs is “crammed” into the state h (and c for an LSTM).
+So for long sequences, the state becomes a bottleneck.
+Long sentence but large dimensionality, becomes a bottleneck.
 For Machine Translation, this means that the source sentence is read exactly once, condensed into a single vector, and then the target sentence is produced.
 Question: Is this how you would translate a sentence?
 
@@ -965,7 +1097,7 @@ Question: Is this how you would translate a sentence?
 * Attention is meant to mimick this process
 
 Proposed by Bahdanau et al. 2015, developed into stand-alone.
-architecture (“Transformer”) by Vaswani et al. 2017 Currently the most popular architecture for NLP This week: Attention as a way to make RNNs better Next week: Transformers.
+Architecture (“Transformer”) by Vaswani et al. 2017 Currently the most popular architecture for NLP This week: Attention as a way to make RNNs better Next week: Transformers.
 
 ## Attention 
 
@@ -976,21 +1108,25 @@ architecture (“Transformer”) by Vaswani et al. 2017 Currently the most popul
 * J value vectors:
 * Scoring function
 
-*Maps a query-key pair to a scalar (“score”)
-* a may be parametrized by parameters theta a 
+* Maps a query-key pair to a scalar (“score”)
+* a may be parametrized by parameters $\theta_a$ 
 
 Step 1: Apply a to q and all keys kj to get scores (one per key):
-
 Step 2: Turn e into probability distribution with the softmax function
-
 Step 3: alpha-weighted sum over V yields one Rdv -dimensional output vector o
-
-#todo
 
 ### Attention in Bahdanau et al., 2015
 
-Source sentence: (x1 . . . xTx ), encoded as hidden states (h1 . . . hTx ) by encoder RNN
-Decoder is defined as:
+* Encoder simple bidrectional RNN.
+* Source sentence: (x1 . . . xTx ), encoded as hidden states (h1 . . . hTx ) by encoder RNN
+* Decoder is defined as: hidden state of decoder given the annotations from the encoder is computed by.
+
+#TODO
+
+$s = tanh(WE_y{i-1}+U[r_i *s{i_1}]+ Cc_i)$
+
+The i matrix is the embedding matrix and i-1 is the embedding of the previous words.
+Dropped the bias matrix.
 
 Exercise: Recognize the architecture (hint: they don’t use boldface)
 * This is a GRU
@@ -1002,8 +1138,11 @@ and they drop the bias
 * C* seem to be additional parameter matrices ... but where does the
 vector ci come from?
 
-Each equation corresponds to one step from our attention recipe. Exercise: Figure out which equation is which step.
-* The first equation is step 3. It defines the output vector ci (o in our recipe) as an attention-weighted sum over encoder states. So the encoder states hj are our value vectors (vj in our recipe).
+Each equation corresponds to one step from our attention recipe. 
+Exercise: Figure out which equation is which step.
+
+* The first equation is step 3. It defines the output vector ci (o in our recipe) as an attention-weighted sum over encoder states.
+So the encoder states hj are our value vectors (vj in our recipe).
 * The second equation is step 2.
 * The third equation is step 1, which defines the raw scores.
 * si-1 (previous decoder state) is the query vector (q in our recipe)
@@ -1011,11 +1150,14 @@ Each equation corresponds to one step from our attention recipe. Exercise: Figur
 
 ### Scoring function is a Feed-Forward Net:
 
-#TODO
+Simple feed forward net.
+Can tell from the fact that its in the appendix, its not conceptually important.
 
 ### What does attention learn?
 
-#TODO
+Attention matrix, pairwise states of decoder and encoder.
+Conceptually the encoder decoder does not need to remember but needs to know where it has to look for it.
+Major improvements especially for long sentences. 
 
 ### Effect on translation quality for long sentences
 
@@ -1030,10 +1172,10 @@ Each equation corresponds to one step from our attention recipe. Exercise: Figur
 
 ## Limitations of RNN's
 
-In an RNN, at a given point in time j, the information about all past is “crammed” into the state vector h_j and c_j for LSTM
-So for long sequences, the state becomes a bottleneck inputs x for an LSTM)
-Especially problematic in encoder-decoder models (e.g., for Machine Translation)
-Solution: Attention (Bahdanau et al., 2015) – an architectural modification of the RNN encoder-decoder that allows the model to “attend to” past encoder states
+* In an RNN, at a given point in time j, the information about all past is “crammed” into the state vector h_j and c_j for LSTM
+* So for long sequences, the state becomes a bottleneck inputs x for an LSTM).
+* Especially problematic in encoder-decoder models (e.g., for Machine Translation).
+* Solution: Attention (Bahdanau et al., 2015) – an architectural modification of the RNN encoder-decoder that allows the model to “attend to” past encoder states.
 
 ### Basic Recipe: 
 
@@ -1041,10 +1183,11 @@ Solution: Attention (Bahdanau et al., 2015) – an architectural modification of
 * J key vector K
 * J value vector V
 * Scoring function a (maps query key pair to scalar)
+* a may be parametrized b parameter $\theta_a$
+* job of a is to scale a score
 
-* Step 1: Apply a to q and all keys kj to get scores (one per key):
-* Step 2: Turn e into a probability distribution with the softmax
-function
+* Step 1: Apply a to q and all keys kj to get scores (one per key): (put scores into e)
+* Step 2: Turn e into a probability distribution with the softmaxfunction
 * Step 3: alpha-weighted sum over V yields one dv -dimensional output vector 
 *  Intuition: alpha_j is how much “attention” the model pays to vj when computing o.
 
@@ -1365,23 +1508,23 @@ Start with a random set of configurations (population) For N iterations:
 
 What is Transfer Learning?
 
-Wikipedia says:
-”Transfer learning is a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem.”
+Wikipedia says: ”Transfer learning is a research problem in machine learning that focuses on **storing knowledge gained while solving one problem and applying it to a different but related problem**.”
 
 **How it works with word2vec**
 
 * Train word2vec on some ”fake task” (DBOW or Skip-gram) 
-* Extract the stored knowledge (a.k.a. embedding) or: Directly download embeddings from the web
+* Extract the stored knowledge (a.k.a. embedding)
+  * or: Directly download embeddings from the web
 * Perform a different (supervised) task using the embeddings
 
 **Challenges:**
 
-If no embedding for a word exists, it cannot be represented.
+* If no embedding for a word exists, it cannot be represented.
 
 Workaround:
 
-* Train subword (character n-gram) embeddings
-* Represent OOV word as combination of them
+  * Train subword (character n-gram) embeddings
+  * Represent OOV word as combination of them
 
 This is already a special case of Tokenization
 
@@ -1398,7 +1541,7 @@ Difficulties:
 
 * When using embeddings (or other models/methods) for transferring knowledge, one has to stick to this method’s tokenization scheme.
 * Using words as tokens leads to vocabulary sizes of easily > 100k, which is undesirable.
-* Characters as tokens lead to a very small vocabulary size but aggravate capturing meaning.
+* Characters as tokens lead to a very small vocabulary size but aggravate capturing meaning.(word more than sum of characters)
 * Using (sets of) n-grams is kind of heuristic.
 
 Smart alternatives:
@@ -1409,15 +1552,14 @@ Smart alternatives:
 
 ## BytePair encoding (BPE)
 
-Data compression algorithm Gage (1994)
-
-Considering data on a byte-level Looking at pairs of bytes:
+* Data compression algorithm Gage (1994)
+* Considering data on a byte-level Looking at pairs of bytes:
 
 1. Count the occurrences of all byte pairs
 2. Find the most frequent byte pair
 3. Replace it with an unused byte
 
-Repeat this process until no further compression is possible
+Repeat this process until no further compression is possible.
 
 **Open-vocabulary neural machine translation Sennrich et al. (2016)**
 
@@ -1429,13 +1571,13 @@ Repeat this process until no further compression is possible
 
 Adapt BPE for word segmentation Sennrich et al. (2016)
 Goal: Represent an open vocabulary by a vocabulary of fixed size 
-    * Use variable-length character sequences
+    
+* Use variable-length character sequences
 
 Looking at pairs of characters:(to get vocab size)
 
 1. Initialize the the vocabulary with all characters plus end-of-word token
-2. Count occurrences and find the most frequent character pair,
-e.g. ”A” and ”B” ( triangle! Word boundaries are not crossed)
+2. Count occurrences and find the most frequent character pair, e.g. ”A” and ”B” ( triangle! Word boundaries are not crossed)
 3. Replace it with the new token ”AB”
 
 Only one hyperparameter: Vocabulary size
@@ -1454,13 +1596,11 @@ Specific Problems:
 
 WordPieceModel: Data-dependent + do not produce OOVs
 
-1. Initialize the the vocabulary with basic Unicode characters (22k for
-Japanese, 11k for Korean)
-#TODO Spaces are indicated by an underscore attached before (of after) the
-respective basic unit or word (increases initial |V | by up to factor 4)
+1. Initialize the the vocabulary with basic Unicode characters (22k for Japanese, 11k for Korean)
+#TODO 
+Spaces are indicated by an underscore attached before (of after) the respective basic unit or word (increases initial |V | by up to factor 4)
 2. Build a language model using this vocabulary
-3. Merge word units that increase the likelihood on the training data the
-most, when added to the model
+3. Merge word units that increase the likelihood on the training data the most, when added to the model
 
 Two possible stopping criteria:
 Vocabulary size or incremental increase of the likelihood
@@ -1485,7 +1625,8 @@ BPE & WordPiece require a sequence of words as inputs
 
 * Some sort of (whitespace) tokenization has to be performed before their application
 
-SentencePiece (as the name already reveals) doesn’t need that * Can be applied to ”raw” sentences
+* SentencePiece (as the name already reveals) doesn’t need that 
+* Can be applied to ”raw” sentences
 
 * Consists of Normalizer, Trainer, Encoder & Decoder
 * Under the hood, two different algorithms are implemented
@@ -1501,10 +1642,10 @@ Embedding Idea + more complex architectures:
 Naive approach:
 Standard embeddings (like word2vec) are ”context-free”
 Better:
+
 * More complex networks, where the embeddings are trainable parameters of the model
 * Model learns context sensitive embeddings
-* We already encountered this in the Transformer
-More complex networks:
+* We already encountered this in the Transformer, More complex networks:
 * Whole network just to learn the embeddings, or
 * Additional embedding-layer as the lowest layer
 
@@ -1512,29 +1653,36 @@ More complex networks:
 1st Generation of neural embeddings are ”context-free”:
 Breakthrough paper by Mikolov et al, 2013 (Word2Vec) Followed by Pennington et al, 2014 (GloVe)
 Extension of Word2Vec by Bojanowski et al, 2016 (FastText)
-Why ”Context-free”?
-Models learn one single embedding for each word Why could this possibly be problematic?
-* ”The default setting of the function is xyz.”
-* ”The probability of default is rather high.”
-Would be nice to have different embeddings for these two occurrences
 
-Questions/Problems:
+**Why ”Context-free”?**
+
+* Models learn one single embedding for each word Why could this possibly be problematic?
+  * ”The default setting of the function is xyz.”
+  * ”The probability of default is rather high.”
+  * Would be nice to have different embeddings for these two occurrences
+
+**Questions/Problems:**
+
 Where in this (deep) model do we achieve contextuality? (For sure not in the lowest layer!)
 * Not straightforward to extract them
 The deeper the network ..
+
 * .. the more expensive to train
 * .. the more data we need
 * You cannot just train them at home
 
-TRANSFER LEARNING
+**TRANSFER LEARNING**
+
 Train such an architecture on ..
+
 * .. a fairly general task
 * .. which does not require any labels (”self-supervised”)
 * .. using large amounts of data
+
 Do not extract static embeddings, but use the whole pre-trained architecture
 Replace the final layer used for the general task by a different layer for a specific task at hand
 
-Taxonomy of transfer learning
+## Taxonomy of transfer learning
 
 Transductive Transfer learning
 Domain adaptation:
@@ -1543,19 +1691,27 @@ Cross-lingual learning:
 * ”Transfer knowledge learned from performing task A on labeled data from language X to performing task A in language Y.”
 Important: No labeled data in target domain/language Y.
 
-Inductive Transfer learning
-Multi-task learning:
+## Inductive Transfer learning
+
+### Multi-task learning:
+
 * ”Transfer knowledge learned from performing task A on data from domain X to performing multiple (simultaneous) tasks B, C, D, .. in domain Y.”
 Sequential transfer learning:
 * ”Transfer knowledge learned from performing task A on data from domain X to performing multiple (sequential) tasks B, C, D, .. in domain Y.”
 Important: Labeled data only for task(s) from target domain Y.
 
-Feature-based transfer learning
+### Feature-based transfer learning
+
 Again: Word Embeddings
-The stored knowledge from the pre-trained model is extracted as is and is not further adapted to the actual domain/task of interest. Difficulties:
+
+The stored knowledge from the pre-trained model is extracted as is and is not further adapted to the actual domain/task of interest. 
+
+Difficulties:
+
 * Source & target domain/task might be pretty different
 * No representations for domain-/task-specific words
 * No contextualization
+
 Enhancement: Embeddings from Language Models (ELMo)
 
 Bidirectional language model (LM) 
@@ -1595,7 +1751,7 @@ Sequential nature of LSTMs:
 * Not fully parallelizable (compared to Transformers)
 * Fail to capture long-range dependency during contextualization
 
-Alleviations/Alternatives:
+Alleviation/Alternatives:
 ULMFiT Howard and Ruder, 2018 is a uni-directional LSTM which is fine-tuned as a whole model on data from the target domain/task.
 GPT Radford et al., 2018 is a Transformer (decoder) which is fine-tuned as a whole model on data from the target domain/task.
 
@@ -1616,14 +1772,17 @@ Embedding layer + three LSTM layers + Softmax Layer
 #### GPT – Architectural Details
 
 Transformer decoder as backbone of the architecture
+
 * 12-layer-decoder with masked attention heads
 * 40k BPE vocabulary
 * Learned positional embeddings (compared to sinusoidal versions)
-Fine-tuning:
+
+### Fine-tuning:
+
 * Linear output layer with softmax activation on top
 * Auxiliary language modeling objective during fine-tuning
   * Improves generalization
-  * Accelerates convegence
+  * Accelerates convergence
 * Task-specific input transformations (see previous slide)
 
 #### GPT – SOTA results
