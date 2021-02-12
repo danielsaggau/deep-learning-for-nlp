@@ -1,9 +1,7 @@
 ---
 title: "Deep Learning for NLP Summary"
-author: "Daniel Saggau"
-date: "2/4/2021"
 output: pdf_document
-fontsize: 12 pt
+fontsize: 11 pt
 ---
 
 ```{r setup, include=FALSE}
@@ -84,7 +82,6 @@ Note: if y is continuous, the sum (in the denominator) must replaced by an integ
 
 Machine Learning Tasks
 Types of Tasks: Classification, Regression, Structured Prediction, Anomaly Detection .Synthesis and sampling Imputation of missing values, Denoising, Clustering, Reinforcement learning
-...
 
 ### Task: Classification
 
@@ -453,13 +450,54 @@ In linear regression, the prediction y^ of a label y is a linear function:
 
 $\hat{y}=w^Tx=\sum_{j=1}^n w_jx_j$
 
-Note, that in this notation, the parameter vector w in Rn stands already for the estimated parameter vector.
-Weight wj decides if value of feature xj increases or decreases prediction y.
-Only linear in the weights.
+* Note, that in this notation, the parameter vector w in Rn stands already for the estimated parameter vector.
+* Weight wj decides if value of feature xj increases or decreases prediction y.
+* Only linear in the weights. 
+* It does not have to be linear in the feature but can be transformed in the features.
+* Hyperplane points above and below
+
+## Matrix Notation I 
+
+* m samples 
+
+**Prediction for one sample**
+
+$\hat{y_i}=w^Tx_i$
+
+**residual error:**
+
+$e_i=(y_i-\hat{y_i})$
+
+**Squared error:**
+
+$e_i^2=(y_i-\hat{y_i})^2 = (\hat{y_i}-y_i)^2$
+
+## Matrix Notation II
+
+Stack all into stacked vectors. 
+Prediction vector: $\hat{y}=Xw$
+
+Can also look into feature/design matrix X.
+Sometimes the intercept term is also called bias or shift term.
+To estimate the parameters W, usually has to be done in the way we have learned in ML.
+Firstly, we need to use some training data. 
+Then we can make higher level decisions. 
+Finally, to see how good the prediction quality is we need to evaluate on test data.
+
+### Simple Example: Housing Price
+
+2 weights that have to be estimated.
+The first weight is for the intercept column. 
+The second weight is the square feet of the property on the outcome Y.
+#TODO(matrix stuff)
 
 ### Linear Regression: Mean Squared Error
 
 Mean squared error of training (or test) data set is the sum of squared differences between the predictions and labels of all m instances.
+
+$1 \over{m}$ $\sum^m_{i=1}e^2_i$ = $1\over m$ $\sum^m_{i=1}(\hat{y}^{(i)}-y^{(i)})^2$
+
+#TODO (matrix notation)
 
 ### Learning: Improving on MSE
 
@@ -484,7 +522,7 @@ We now know that minimum is where gradient is 0.
 ### Deriving the Normal Equation
 
 Practical Remarks
-T
+
 * one feature is the exact multiple of another
 * there are more features than training examples
   * a Moore-Penrose pseudoinverse picks solution with smallest
@@ -2610,6 +2648,8 @@ Distill the model once it is trained (e.g., Distilbert).
 
 # Multilingual models Lecture 13
 
+## Bert Recap 
+
 ## mBERT 
 
 Transformer
@@ -2634,49 +2674,62 @@ BERT-Base, Multilingual Cased: 104 languages, 12 layers, 768-hidden, 12 heads, 1
 
 ### Evaluation: XNLI
 
-https://cims.nyu.edu/~sbowman/xnli/
-Derived from MultiNLI
-https://cims.nyu.edu/~sbowman/multinli/
-Crowd-sourced collection of 433k sentence pairs annotated with textual entailment information
-Multigenre
-Task: for a sentence pair, classify it as neutral, contradiction or entailment
+* https://cims.nyu.edu/~sbowman/xnli/
+* Derived from MultiNLI https://cims.nyu.edu/~sbowman/multinli/
+* Crowd-sourced collection of 433k sentence pairs annotated with textual entailment information
+* Multigenre
+* Task: for a sentence pair, classify it as neutral, contradiction or entailment
 
 ### Example for neutral
 
 Your gift is appreciated by each and every student who will benefit from your generosity. <? > Hundreds of students will benefit from your generosity.(genre: letters)
+#### (appreciation doesn't imply benefit)
 
 ### Example for contradiction
 
 if everybody like in August when everybody’s on vacation or something we can dress a little more casual <? > August is a black out month for vacations in the company.
+#### contradiction because either vacation or not 
 
 ### Example for entailment
 
 At the other end of Pennsylvania Avenue, people began to line up for a White House tour. <? > People formed a line at the end of Pennsylvania Avenue.
 
+#### if you form a line which is same as beginning a line. All info first sentence follows in the second sentence. 
 
 ## XNLI
 
-5000 test pairs and 2500 dev pairs from MNLI
-Translated (by crowd sourcing) into French, Spanish, German, Greek, Bulgarian, Russian, Turkish, Arabic, Vietnamese, Thai, Chinese, Hindi, Swahili, Urdu
-“The corpus is made to evaluate how to perform inference in any language (including low-resources ones like Swahili or Urdu) when only English NLI data is available at training time.”
+* 5000 test pairs and 2500 dev pairs from MNLI
+* Translated (by crowd sourcing) into French, Spanish, German, Greek, Bulgarian, Russian, Turkish, Arabic, Vietnamese, Thai, Chinese, Hindi, Swahili, Urdu
+* “The corpus is made to evaluate how to perform inference in any language (including low-resources ones like Swahili or Urdu) when only English NLI data is available at training time.”
+
+* Translate train(training set translation into foreign) vs translate test vs zero shot (no translation)
+* **advantage mBert** you only need one model. you dont need translation
 
 ## Big mystery
 
 Why does this model learn a multilingual representation even though it has zero multilingual signal?
-Recall that mBERT is trained on a multlingual corpus – but there are no alignments of words or even sentences. In fact, the corpora are not parallel.
+Recall that mBERT is trained on a multlingual corpus – but there are no alignments of words or even sentences.
+In fact, the corpora are not parallel.
 Maybe the shared vocabulary between languages is crucial?
+
 * E.g., names are often the same across languages We will answer this in the last section today.
 
+## Summary
+
+* Single model in mutlilingual setting 
+* Supports easy transfer learning 
+* In Particular: transfer learning for low resource languages 
 
 ## XLM-R
 
-XLM-R = XLM-RoBERTa
-Quite similar to mBERT
-Trained on 100 languages
-Much larger training corpus
-(2 terabytes CommonCrawl vs. Wikipedia)
-Better performance
-Claim: performance competitive with monolingual model As in the case of mBERT: no parallel data is used.
+* XLM-R = XLM-RoBERTa
+* Quite similar to mBERT
+* Trained on 100 languages
+* Much larger training corpus
+* (2 terabytes CommonCrawl vs. Wikipedia)
+* Better performance (than Bert which is a huge improvement)
+* Claim: performance competitive with monolingual model As in the case of mBERT: no parallel data is used.
+* Much larger dataset
 
 ### Curse of multilinguality
 
@@ -2687,22 +2740,42 @@ However, it’s easy to address this, simply by increasing the capacity of the m
 * Adding more capacity to the model alleviates the curse of multilinguality, but remains an issue for models of moderate size.
 * Multilingual models can benefit from allocating a higher proportion of the total number of parameters to the embedding layer even though this reduces the size of the Transformer.
 
+### Effect of vocabulary size
+
+Multilingual models can benefit from allocating a higher proportion of the total number of parameters to the embedding layer even though this reduces the size of the Transformer. 
+
+### Performance 
+
+As good as monolingual models 
+
+## Challenges for mBERT and XLM-R
+
+* Vocabulary coverage
+  * (same preprocessing despite language difference)
+* 250k not enough for 100 languages
+* Low-resource transfer doesn't work well for very different languages 
+  * How to evaluate? 
+  * XNLI?
+
+## Paper: Identifying Elements Essential for BERT’s Multilinguality
+
 #### Fake-English: No vocabulary overlap with English
 
 Good performance without vocabulary overlap
 
-Factors that influence degree of multilinguality
-(i.e., shared English / Fake-English representations)
-Limited model capacity:
-overparameterization decreases multilinguality
-Shared special tokens and position embeddings contribute to multilinguality
-Extreme linguistic divergence destroys multilinguality (experiment in paper: reverse word order)
-Lack of parallelism reduces multilinguality
-(even though parallelism is not directly exploited)
-Recap: shared vocabulary is not necessary.
+## Factors that influence degree of multilinguality (i.e., shared English / Fake-English representations)
 
-Why are multilingual contextualized model multilingual?
+* Limited model capacity:
+  * overparameterization decreases multilinguality
+* Shared special tokens and position embeddings contribute to multilinguality
+* Extreme linguistic divergence destroys multilinguality (experiment in paper: reverse word order)
+* Lack of parallelism reduces multilinguality (even though parallelism is not directly exploited)
+* Recap: shared vocabulary is not necessary.
+
+## Why are multilingual contextualized model multilingual?
+
 Question: Why are these models multilingual even though there is no direct multilingual training signal.
 Answer: There are many different factors all of which play a role.
+
 The most important one seems to be limited model capacity:
-If there are not enough parameters for independent representation of the languages, parameter sharing is forced upon the model during training.
+* If there are not enough parameters for independent representation of the languages, parameter sharing is forced upon the model during training.
