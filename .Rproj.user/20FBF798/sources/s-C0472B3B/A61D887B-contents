@@ -1,0 +1,19 @@
+---
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=F}
+knitr::include_graphics("./Downloads/anmeldung_gen.pdf")
+```
+```{r}
+
+#
+# Coding Chunk
+# Name : Daniel Saggau 
+# model = lm(x~y, data = data)
+```
+

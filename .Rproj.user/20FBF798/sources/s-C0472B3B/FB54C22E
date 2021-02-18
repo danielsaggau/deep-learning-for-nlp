@@ -1,0 +1,26 @@
+{
+    "id": "FB54C22E",
+    "path": "~/deep-learning-for-nlp/summary_deeplearning_nlp.Rmd",
+    "project_path": "summary_deeplearning_nlp.Rmd",
+    "type": "r_markdown",
+    "hash": "24335787",
+    "contents": "",
+    "dirty": false,
+    "created": 1612398594031.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "2419,0",
+        "scrollLine": "0",
+        "ignored_words": "Interpretability,backpropagation,pointwise,sigmoid,dimensionality,tokenization\n"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1613145317,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1613145317,
+    "read_only": false,
+    "read_only_alternatives": []
+}

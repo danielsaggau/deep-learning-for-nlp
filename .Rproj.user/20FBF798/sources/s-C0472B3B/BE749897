@@ -1,0 +1,32 @@
+{
+    "id": "BE749897",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1613407132127.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "expression": "beink",
+        "caption": "beink",
+        "totalObservations": 3000,
+        "displayedObservations": 3000,
+        "variables": 8,
+        "cacheKey": "95C40DEC",
+        "object": "beink",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=beink&cache_key=95C40DEC&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 12884901891,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1613407132127,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,23 @@
+---
+title: "Supervised Regression i2ml"
+author: "Daniel Saggau"
+date: "2/9/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Chapter 2.1 Loss Functions for Regression 
+
+
+# Chater 2.2 Linear Regression Models 
+
+
+# Chapter 2.3 Polynomial Regression Models 
+
+
+# Chapter 2.4 k-NN
+
+

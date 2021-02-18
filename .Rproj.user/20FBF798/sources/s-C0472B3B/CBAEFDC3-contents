@@ -1,0 +1,8 @@
+# Daniel Saggau
+# Anmeldung GenReg
+
+beink <- read.csv("~/Downloads/beink.dat", sep="")
+summary(beink)
+
+model1 =lm(beink~., data=beink)
+model1
