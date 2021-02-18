@@ -514,37 +514,47 @@ Why minimum and and not maximum or saddle point?
 * Check for vector valued function: Hessian is positive-semidefinite.
 
 ### Second Derivative Test
-Second derivative of Mean Squared Error for Linear model with only one featur
 
-Solving for w
-We now know that minimum is where gradient is 0.
+Second derivative of Mean Squared Error for Linear model with only one feature.
+As long as one feature value is greater 0 and we can guarantee that we have found a minimum.
 
 ### Deriving the Normal Equation
 
-Practical Remarks
+Solving for w: 
+We now know that minimum is where gradient is 0.
+If we solve this problem is solving the so called normal equations.
+The w itself is of dimension n * t.
+
+# TODO (OLS estimation)
+
+$(X^TX)^{-1}X^TXw = (X^TX)^{-1}X^Ty$
+
+### Practical Remarks
+
+What if X does not have an inverse?
+This can happen if there are infinitely many solutions:
 
 * one feature is the exact multiple of another
 * there are more features than training examples
-  * a Moore-Penrose pseudoinverse picks solution with smallest
-Euclidean norm.
-  * adding a regularization term makes the system of equations
-What if X
-
-This can happen if there are infinitely many solutions:
-
-X does not have an inverse?
-non-singular (uniquely solvable)
-
-In general: Avoid computing the matrix inverse when
-
-implementing least squares (slow/unstable)!
-There are usually special routines for solving linear least squares and rigde regression.
+  * a Moore-Penrose pseudo-inverse picks solution with smallest Euclidean norm.
+  * adding a regularization term makes the system of equations non-singular (uniquely solvable)
+    * ridge regression
+    * normal equation becomes $w= (X^TX+ \lambda I)^{-1}X^Ty$
+    
+* In general: Avoid computing the matrix inverse when implementing least squares (slow/unstable)!
+* There are usually special routines for solving linear least squares and rigde regression.
 
 ### Second Derivative Test for Multi-Dimensional Case
 
-Second derivative test for multi-dimensional w in Rn
-Is Hessian positive-semidefinite? (zT Hz > 0 for z/= 0) equivalent Function is convex.
-Hessian: Matrix of second-order partial derivatives.
+* Second derivative test for multi-dimensional w in Rn
+* Is Hessian positive-semidefinite? (zT Hz > 0 for z/= 0) equivalent 
+  * Function is convex.
+* Hessian: Matrix of second-order partial derivatives.
+
+Matrix algebra: 
+
+* derivative w respect to w leads to show that X^TX is at least semi-definite and guarantees that minimum squared error.
+* #TODO (math) 
 
 ### Linear Regression: Summary
 
@@ -554,34 +564,42 @@ Hessian: Matrix of second-order partial derivatives.
 
 ### Maximum Likelihood Estimation
 
-Machine learning models are often more interpretable if they are stated in a probabilistic way.
-Performance measure: What is the probability of the training data given the model parameters? Works only well for discrete data! More general: use densities instead of probabilities
-Likelihood: Probability density of data as a function of model parameters. Generally, likelihood is a function proportional to the density.
--> Maximum Likelihood Estimation
-Many models can be formulated in a probabilistic way!
+* Machine learning models are often more interpretable if they are stated in a probabilistic way.
+* Performance measure: What is the probability of the training data given the model parameters? Works only well for discrete data! * * More general: use densities instead of probabilities
+* Likelihood: Probability density of data as a function of model parameters. 
+* Generally, likelihood is a function proportional to the density.
+  * Maximum Likelihood Estimation
+* Many models can be formulated in a probabilistic way!
 
 ### Probability density of a data set
 
 Data points are assumed to be (stochastically) independent (and sometimes identically distributed) random variables (i.d. or i.i.d.)
+
 * Assumption made by many ML models.
 * Identically distributed: Examples come from same distribution.
 * Independent: Value of one example doesn’t influence other example.
 *  Probability density of the data set is the product of example
 probability densities.
 
-Maximum Likelihood Estimation
-Likelihood: Probability density of data viewed as function of parameters theta
-(Negative) Log-Likelihood (NLL):
+## Maximum Likelihood Estimation
+
+* Likelihood: Probability density of data viewed as function of parameters theta
+* (Negative) Log-Likelihood (NLL):
 * Logarithm is monotonically increasing
 * Maximum of function stays the same
 * Easier to do arithmetic with (sums vs. products)
 * Optimization is often formulated as minimization -> take negative of function.
+
 Maximum likelihood estimator for theta:
 
+#TODO
+
 ### Conditional Log-Likelihood
+
 Log-likelihood can be stated for supervised and unsupervised tasks
 
 ### Linear Regression as Maximum Likelihood
+
 Instead of predicting one value yˆ for an input x, model probability distribution p(y|x).
 For the same value of x, different values of y may occur (with different probability).
 
@@ -590,6 +608,7 @@ For the same value of x, different values of y may occur (with different probabi
 Linear Regression as Maximum Likelihood
 
 * Taking the log makes it a quadratic function!
+
 Conditional negative log-likelihood:
 
 Minimizing NLL under these assumptions is equivalent to minimizing MSE!
@@ -597,20 +616,20 @@ The result of the minimization of the NLL is the MLE theta hat.
 
 ### A Caveat: Maximum Likelihood is not Bayesian
 
-MLE is simple: Identify distribution and parameters, then maximize! MLE accounts for (some) uncertainty: Instead of predicting a single
+MLE is simple: Identify distribution and parameters, then maximize! 
+MLE accounts for (some) uncertainty: Instead of predicting a single.
 value yˆ, treat y as a random variable.
 However, what about the uncertainty about our parameters theta?
-Shouldn’t theta be treated as a random variable, too? ˆ
-(Instead of a point estimate theta?)
+Shouldn’t theta be treated as a random variable, too? (Instead of a point estimate theta?).
 
 Uncertainty about theta influenced by:
+
 * Our assumptions what reasonable values for theta look like.
 * The amount of training data.
 * The properties (variance ...) of the training data.
-Bayesian inference is all about modelling randomness of theta in a sound way.
-Why is it called Bayesian?
-* The Bayesian approach is theoretically more appealing than working with point estimates.
-* In practical terms: Sometimes going the Bayesian way pays off, sometimes it doesn’t.
+* Bayesian inference is all about modelling randomness of theta in a sound way. Why is it called Bayesian?
+  * The Bayesian approach is theoretically more appealing than working with point estimates.
+  * In practical terms: Sometimes going the Bayesian way pays off, sometimes it doesn’t.
 
 ### Maximum Likelihood: Summary
 
@@ -2652,7 +2671,8 @@ Distill the model once it is trained (e.g., Distilbert).
 
 ## mBERT 
 
-Transformer
+#### Transformer
+
 Training: Masked language modeling (MLM)
 BERT learns an enormous amount of knowledge about language and the world through MLM training on large corpora.
 Applications: finetune on a particular task
